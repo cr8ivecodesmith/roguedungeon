@@ -1,7 +1,8 @@
 import logging
 
 from . import settings as st
-from .bootstrap import console, tdl
+from .bootstrap import root_console, console, tdl
+from .entities import GameObject
 
 
 log = logging.getLogger('default')
@@ -35,19 +36,40 @@ def handle_keys(pos_x, pos_y):
 
 def run():
     log.info('Game started')
-    player_x, player_y = st.GAME_SCREEN_WIDTH // 2, st.GAME_SCREEN_HEIGHT // 2
+    player = GameObject(
+        st.GAME_SCREEN_WIDTH // 2, st.GAME_SCREEN_HEIGHT // 2,
+        '@', (255, 255, 255)
+    )
+    npc = GameObject(
+        player.x - 5, player.y,
+        '@', (255, 255, 0)
+    )
+    objects = [
+        player,
+        npc
+    ]
 
     while not tdl.event.is_window_closed():
-        # Draw the character
-        console.draw_char(player_x, player_y, '@', bg=None, fg=(255, 255, 255))
+        # Draw the objects
+        for obj in objects:
+            obj.draw()
+
+        # (Blit) the console to root_console and (flush) the screen
+        root_console.blit(
+            console,
+            0, 0,
+            st.GAME_SCREEN_WIDTH, st.GAME_SCREEN_HEIGHT,
+            0, 0
+        )
         tdl.flush()
 
-        # Clear the previous pos of the character
-        console.draw_char(player_x, player_y, ' ', bg=None)
+        # Clear the previous pos of the objects
+        for obj in objects:
+            obj.clear()
 
         # Set the new player pos based on key strokes
-        player_x, player_y = handle_keys(player_x, player_y)
+        player.x, player.y = handle_keys(player.x, player.y)
 
         # Handle exit game
-        if not player_x and not player_y:
+        if not player.x and not player.y:
             break

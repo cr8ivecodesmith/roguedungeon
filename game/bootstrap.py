@@ -11,11 +11,16 @@ tdl.set_font(
     altLayout=st.GAME_FONT_ALTLAYOUT
 )
 
-console = tdl.init(
+root_console = tdl.init(
     st.GAME_SCREEN_WIDTH,
     st.GAME_SCREEN_HEIGHT,
     title=st.GAME_TITLE,
     fullscreen=st.GAME_FULLSCREEN
+)
+
+console = tdl.Console(
+    st.GAME_SCREEN_WIDTH,
+    st.GAME_SCREEN_HEIGHT
 )
 
 tdl.setFPS(st.GAME_FPS)
