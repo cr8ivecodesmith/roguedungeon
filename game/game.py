@@ -49,13 +49,13 @@ def render_all(objects):
             wall = gamemap[x][y].block_sight
             if wall:
                 console.draw_char(
-                    x, y, st.BG_CHAR_WALL,
-                    fg=None, bg=st.COLOR_DARK_WALL
+                    x, y, st.WALL_CHAR,
+                    fg=st.WALL_FG_COLOR, bg=st.WALL_BG_COLOR_DARK
                 )
             else:
                 console.draw_char(
-                    x, y, st.BG_CHAR_GROUND,
-                    fg=None, bg=st.COLOR_DARK_GROUND
+                    x, y, st.GROUND_CHAR,
+                    fg=st.GROUND_FG_COLOR, bg=st.GROUND_BG_COLOR_DARK
                 )
 
     # Draw the objects on top of the map
