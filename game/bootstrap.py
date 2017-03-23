@@ -1,5 +1,8 @@
+from logging import config as log_conf
 import os
+
 import tdl
+
 from . import settings as st
 
 tdl.set_font(
@@ -18,13 +21,14 @@ console = tdl.init(
 tdl.setFPS(st.GAME_FPS)
 
 
-def create_logging():
+def setup_logging():
     if not os.path.isdir(st.LOGDIR):
         os.mkdir(st.LOGDIR)
     if not os.path.exists(st.LOGFILE):
         with open(st.LOGFILE, 'w') as fh:
             fh.close()
+    log_conf.dictConfig(st.LOGGING)
 
 
 def init():
-    create_logging()
+    setup_logging()
