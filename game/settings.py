@@ -30,7 +30,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'INFO' if not DEBUG else 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOGFILE,
             'maxBytes': 1024*1024*10,  # 10 megabytes
@@ -38,7 +38,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'console': {
-            'level': 'INFO' if not DEBUG else 'DEBUG',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -46,7 +46,7 @@ LOGGING = {
     'loggers': {
         'default': {
             'handlers': ['file', 'console'],
-            'level': 'INFO',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': False,
         },
     },

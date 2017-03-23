@@ -1,0 +1,7 @@
+Steps:
+
+- Install project requirements
+- Setup project scaffold
+- Write initial code for settings and boostrap and drawing the character on screen
+- Configure logging
+- Write code moving the character
