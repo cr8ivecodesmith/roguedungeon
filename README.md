@@ -20,7 +20,7 @@ Linux:
 ```
 > python3 -m venv venv
 > ./venv/bin/activate
-> pip install -r requirements.txt
+(venv) > pip install -r requirements.txt
 ```
 
 Windows:
@@ -28,7 +28,16 @@ Windows:
 ```
 > python3 -m venv venv
 > venv/Scripts/activate
-> pip install -r requirements.txt
+(venv) > pip install -r requirements.txt
+```
+
+
+## Running the game
+
+Make sure the virtualenv is activated.
+
+```
+(venv) > python play.py
 ```
 
 

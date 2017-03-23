@@ -1,2 +1,9 @@
+# main
 libtcod-cffi
 tdl
+
+# documentation
+sphinx
+
+# utilities
+ipython
