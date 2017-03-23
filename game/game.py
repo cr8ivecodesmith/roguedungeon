@@ -3,35 +3,72 @@ import logging
 from . import settings as st
 from .bootstrap import root_console, console, tdl
 from .entities import GameObject
+from .map import gamemap
 
 
 log = logging.getLogger('default')
 
 
-def handle_keys(pos_x, pos_y):
-    user_input = tdl.event.key_wait()
+def handle_keys(obj, realtime=False):
+    if realtime:
+        keypress = False
+        for event in tdl.event.get():
+            if event.type == 'KEYDOWN':
+                user_input = event
+                keypress = True
+        if not keypress:
+            return
+    else:
+        user_input = tdl.event.key_wait()
 
     if user_input.key == 'ENTER' and user_input.alt:
         log.debug('Full screen activated!')
         tdl.set_fullscreen(True)
     elif user_input.key == 'ESCAPE':
         log.debug('Smell ya later!')
-        return None, None
+        return True
 
     if user_input.key == 'UP':
-        pos_y -= 1
-        log.debug('Key press UP ({}, {})'.format(pos_x, pos_y))
+        obj.move(0, -1)
+        log.debug('Key press UP ({}, {})'.format(obj.x, obj.y))
     if user_input.key == 'DOWN':
-        pos_y += 1
-        log.debug('Key press DOWN ({}, {})'.format(pos_x, pos_y))
+        obj.move(0, 1)
+        log.debug('Key press DOWN ({}, {})'.format(obj.x, obj.y))
     if user_input.key == 'LEFT':
-        pos_x -= 1
-        log.debug('Key press LEFT ({}, {})'.format(pos_x, pos_y))
+        obj.move(-1, 0)
+        log.debug('Key press LEFT ({}, {})'.format(obj.x, obj.y))
     if user_input.key == 'RIGHT':
-        pos_x += 1
-        log.debug('Key press RIGHT ({}, {})'.format(pos_x, pos_y))
+        obj.move(1, 0)
+        log.debug('Key press RIGHT ({}, {})'.format(obj.x, obj.y))
 
-    return pos_x, pos_y
+
+def render_all(objects):
+    # Draw the map first
+    for y in range(st.GAME_MAP_HEIGHT):
+        for x in range(st.GAME_MAP_WIDTH):
+            wall = gamemap[x][y].block_sight
+            if wall:
+                console.draw_char(
+                    x, y, st.BG_CHAR_WALL,
+                    fg=None, bg=st.COLOR_DARK_WALL
+                )
+            else:
+                console.draw_char(
+                    x, y, st.BG_CHAR_GROUND,
+                    fg=None, bg=st.COLOR_DARK_GROUND
+                )
+
+    # Draw the objects on top of the map
+    for obj in objects:
+        obj.draw()
+
+    # (Blit) the console to root_console
+    root_console.blit(
+        console,
+        0, 0,
+        st.GAME_SCREEN_WIDTH, st.GAME_SCREEN_HEIGHT,
+        0, 0
+    )
 
 
 def run():
@@ -45,22 +82,13 @@ def run():
         '@', (255, 255, 0)
     )
     objects = [
+        npc,
         player,
-        npc
     ]
 
     while not tdl.event.is_window_closed():
         # Draw the objects
-        for obj in objects:
-            obj.draw()
-
-        # (Blit) the console to root_console and (flush) the screen
-        root_console.blit(
-            console,
-            0, 0,
-            st.GAME_SCREEN_WIDTH, st.GAME_SCREEN_HEIGHT,
-            0, 0
-        )
+        render_all(objects)
         tdl.flush()
 
         # Clear the previous pos of the objects
@@ -68,8 +96,8 @@ def run():
             obj.clear()
 
         # Set the new player pos based on key strokes
-        player.x, player.y = handle_keys(player.x, player.y)
+        end_game = handle_keys(player, st.REALTIME_MOVEMENT)
 
         # Handle exit game
-        if not player.x and not player.y:
+        if end_game:
             break
