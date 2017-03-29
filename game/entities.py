@@ -47,3 +47,12 @@ class Tile:
 
         # If a tile is blocked, it also blocks sight
         self.block_sight = blocked if blocked else block_sight
+
+
+class Rect:
+    """A rectangle on the map used to characterize a room
+
+    """
+    def __init__(self, x, y, w, h):
+        self.x1, self.y1 = x, y
+        self.x2, self.y2 = (x + w), (y + h)
