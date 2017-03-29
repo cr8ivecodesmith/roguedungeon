@@ -1,7 +1,9 @@
+from random import randint
+
 from . import settings as st
 
 
-def create_room(room, gamemap):
+def create_room(gamemap, room):
     """Carves a room in the gamemap
 
     """
@@ -12,21 +14,71 @@ def create_room(room, gamemap):
     return gamemap
 
 
-def __generate_gamemap():
+def create_h_tunnel(gamemap, y, x1, x2):
+    """Creates a horizontal tunnel
+
+    """
+    for x in range(min(x1, x2), max(x1, x2) + 1):
+        gamemap[x][y].blocked = False
+        gamemap[x][y].block_sight = False
+    return gamemap
+
+
+def create_v_tunnel(gamemap, x, y1, y2):
+    """Creates a vertical tunnel
+
+    """
+    for y in range(min(y1, y2), max(y1, y2) + 1):
+        gamemap[x][y].blocked = False
+        gamemap[x][y].block_sight = False
+    return gamemap
+
+
+def generate_gamemap():
     from .entities import Tile, Rect
 
     # Fill map with `blocked` tile
     gamemap = [[ Tile(True) for y in range(st.GAME_MAP_HEIGHT)]
                 for x in range(st.GAME_MAP_WIDTH) ]
 
-    # Create 2 rooms
-    room1 = Rect(20, 15, 10, 15)
-    room2 = Rect(50, 15, 10, 15)
+    rooms = []
+    num_rooms = 0
+    for r in range(st.MAX_ROOMS):
+        # Get random width and height
+        w = randint(st.ROOM_MIN_SIZE, st.ROOM_MAX_SIZE)
+        h = randint(st.ROOM_MIN_SIZE, st.ROOM_MAX_SIZE)
 
-    gamemap = create_room(room1, gamemap)
-    gamemap = create_room(room2, gamemap)
+        # Get random pos w/o going out of the map bounds
+        x = randint(0, st.GAME_MAP_WIDTH - w - 1)
+        y = randint(0, st.GAME_MAP_HEIGHT - h - 1)
 
-    return gamemap
+        new_room = Rect(x, y, w, h)
+
+        # Run through the other rooms to see if they intersect
+        failed = False
+        for other_room in rooms:
+            if new_room.intersect(other_room):
+                failed = True
+                break
+
+        if not failed:
+            gamemap = create_room(gamemap, new_room)
+            new_x, new_y = new_room.center()
+            if num_rooms >= 1:
+                prev_x, prev_y = rooms[num_rooms - 1].center()
+                # Randomly pick a how to carve the tunnels
+                if randint(0, 1):
+                    # Move horizontally, then vertically
+                    gamemap = create_h_tunnel(gamemap, prev_y, prev_x, new_x)
+                    gamemap = create_v_tunnel(gamemap, new_x, prev_y, new_y)
+                else:
+                    # Move vertically, then horizontally
+                    gamemap = create_v_tunnel(gamemap, prev_x, prev_y, new_y)
+                    gamemap = create_h_tunnel(gamemap, new_y, prev_x, new_x)
+            rooms.append(new_room)
+            num_rooms += 1
+
+    return gamemap, rooms
 
 
-gamemap = __generate_gamemap()
+gamemap, rooms = generate_gamemap()

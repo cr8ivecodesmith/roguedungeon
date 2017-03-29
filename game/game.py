@@ -3,7 +3,7 @@ import logging
 from . import settings as st
 from .bootstrap import root_console, console, tdl
 from .entities import GameObject
-from .map import gamemap
+from .map import gamemap, rooms
 
 
 log = logging.getLogger('default')
@@ -85,6 +85,9 @@ def run():
         npc,
         player,
     ]
+
+    # Place the player at the center of the first room
+    player.x, player.y = rooms[0].center()
 
     while not tdl.event.is_window_closed():
         # Draw the objects
