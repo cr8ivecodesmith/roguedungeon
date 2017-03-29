@@ -45,7 +45,7 @@ LOGGING = {
             'level': 'DEBUG' if DEBUG else 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOGFILE,
-            'maxBytes': 1024*1024*10,  # 10 megabytes
+            'maxBytes': 1024 * 1024 * 10,  # 10 megabytes
             'backupCount': 10,
             'formatter': 'verbose'
         },

@@ -1,7 +1,7 @@
 from . import settings as st
 
 
-def _generate_gamemap():
+def __generate_gamemap():
     from .entities import Tile
     gamemap = [[ Tile(False) for y in range(st.GAME_MAP_HEIGHT)]
                 for x in range(st.GAME_MAP_WIDTH) ]
@@ -15,4 +15,4 @@ def _generate_gamemap():
     return gamemap
 
 
-gamemap = _generate_gamemap()
+gamemap = __generate_gamemap()
