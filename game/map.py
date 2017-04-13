@@ -1,6 +1,11 @@
+import logging
+
 from random import randint
 
 from . import settings as st
+
+
+log = logging.getLogger('default')
 
 
 def create_room(gamemap, room):
@@ -35,7 +40,12 @@ def create_v_tunnel(gamemap, x, y1, y2):
 
 
 def generate_gamemap():
+    """Generate the gamemap
+
+    """
     from .entities import Tile, Rect
+
+    log.debug('Generating gamemap')
 
     # Fill map with `blocked` tile
     gamemap = [[ Tile(True) for y in range(st.GAME_MAP_HEIGHT)]
@@ -77,6 +87,9 @@ def generate_gamemap():
                     gamemap = create_h_tunnel(gamemap, new_y, prev_x, new_x)
             rooms.append(new_room)
             num_rooms += 1
+            log.debug('Room created at {} [{}]'.format(
+                new_room.center(), len(rooms)
+            ))
 
     return gamemap, rooms
 
