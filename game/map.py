@@ -39,6 +39,22 @@ def create_v_tunnel(gamemap, x, y1, y2):
     return gamemap
 
 
+def is_visible_tile(gamemap, x, y):
+    """Determines tile visibility. Used primarily for FOV determination
+
+    """
+    if x >= st.GAME_MAP_WIDTH or x < 0:
+        return False
+    elif y >= st.GAME_MAP_HEIGHT or y < 0:
+        return False
+    elif gamemap[x][y].blocked:
+        return False
+    elif gamemap[x][y].block_sight:
+        return False
+    else:
+        return True
+
+
 def generate_gamemap():
     """Generate the gamemap
 
