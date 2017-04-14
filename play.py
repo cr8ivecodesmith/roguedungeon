@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from game import bootstrap, game
+from rogue import bootstrap
+import game
 
 
 if __name__ == '__main__':

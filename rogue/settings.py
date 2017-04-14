@@ -1,12 +1,13 @@
 import os
 
 
+# Path settings
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 PROJECTDIR = os.path.dirname(BASEDIR)
 LOGDIR = os.path.join(PROJECTDIR, 'logs')
-LOGFILE = os.path.join(PROJECTDIR, 'logs', 'game.log')
-DEBUG = True
 
+
+# Game settings
 GAME_SCREEN_WIDTH = 80
 GAME_SCREEN_HEIGHT = 50
 GAME_TITLE = 'Rogue Dungeon'
@@ -40,13 +41,17 @@ FOV_LIGHT_WALLS = True
 FOV_TORCH_RADIUS = 10
 
 
-
+# Log settings
+DEBUG = True
+LOGLEVEL = 'INFO'
+LOGFILE = os.path.join(PROJECTDIR, 'logs', 'game.log')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '[%(asctime)s] %(levelname)s %(name)s %(pathname)s %(lineno)d - %(message)s'
+            'format': ('[%(asctime)s] %(levelname)s %(name)s %(pathname)s '
+                       '%(lineno)d - %(message)s')
         },
         'simple': {
             'format': '[%(asctime)s] %(levelname)s %(module)s - %(message)s'
@@ -54,7 +59,7 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'DEBUG' if DEBUG else LOGLEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': LOGFILE,
             'maxBytes': 1024 * 1024 * 10,  # 10 megabytes
@@ -62,7 +67,7 @@ LOGGING = {
             'formatter': 'verbose'
         },
         'console': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'DEBUG' if DEBUG else LOGLEVEL,
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
@@ -70,7 +75,7 @@ LOGGING = {
     'loggers': {
         'default': {
             'handlers': ['file', 'console'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': 'DEBUG' if DEBUG else LOGLEVEL,
             'propagate': False,
         },
     },
