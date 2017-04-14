@@ -4,11 +4,14 @@ import sys
 
 log = logging.getLogger('default')
 
+DO_QUIT = 'quit'
+DO_PLAY = 'play'
 
-def process(user_input=None):
+
+def process(user_input):
     if not user_input:
         return
-
     if user_input.key == 'ESCAPE':
-        log.debug('Smell ya later!')
-        sys.exit()
+        return DO_QUIT
+    else:
+        return DO_PLAY
