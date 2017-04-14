@@ -69,17 +69,19 @@ def render_all(objects, player=None, player_moved=False, init_fov=False):
             visible = (x, y) in visible_tiles
             wall = gamemap[x][y].block_sight
             if not visible:
-                if wall:
-                    console.draw_char(
-                        x, y, st.WALL_CHAR,
-                        fg=st.WALL_FG_COLOR, bg=st.WALL_BG_COLOR_DARK
-                    )
-                else:
-                    console.draw_char(
-                        x, y, st.GROUND_CHAR,
-                        fg=st.GROUND_FG_COLOR, bg=st.GROUND_BG_COLOR_DARK
-                    )
+                if gamemap[x][y].explored:
+                    if wall:
+                        console.draw_char(
+                            x, y, st.WALL_CHAR,
+                            fg=st.WALL_FG_COLOR, bg=st.WALL_BG_COLOR_DARK
+                        )
+                    else:
+                        console.draw_char(
+                            x, y, st.GROUND_CHAR,
+                            fg=st.GROUND_FG_COLOR, bg=st.GROUND_BG_COLOR_DARK
+                        )
             else:
+                gamemap[x][y].explored = True
                 if wall:
                     console.draw_char(
                         x, y, st.WALL_CHAR,
