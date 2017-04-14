@@ -2,6 +2,7 @@ import logging
 
 from random import randint
 
+from . import colors
 from . import settings as st
 
 
@@ -55,6 +56,45 @@ def is_visible_tile(gamemap, x, y):
         return True
 
 
+def is_blocked(gamemap, rooms, x, y):
+    """Determines if a tile is blocked by a blocking object
+
+    """
+    if gamemap[x][y].blocked:
+        return True
+    for r in rooms:
+        for robj in r.room_objects:
+            if robj.blocks and robj.x == x and robj.y == y:
+                return True
+    return False
+
+
+def place_objects(room):
+    """Put a game object in a room
+
+    """
+    from .entities import GameObject
+    num_monsters = randint(0, st.ROOM_MAX_MONSTERS)
+    for i in range(num_monsters):
+        x, y = randint(room.x1, room.x2-1), randint(room.y1, room.y2-1)
+        chance = randint(0, 100)
+        if chance < 80:
+            # create an orc
+            obj = GameObject(
+                x, y, 'o', 'Orc',
+                colors.desaturated_green,
+                blocks=True
+            )
+        else:
+            # create a troll
+            obj = GameObject(
+                x, y, 'T', 'Troll',
+                colors.darker_green,
+                blocks=True
+            )
+        room.room_objects.append(obj)
+
+
 def generate_gamemap():
     """Generate the gamemap
 
@@ -102,6 +142,7 @@ def generate_gamemap():
                     gamemap = create_v_tunnel(gamemap, prev_x, prev_y, new_y)
                     gamemap = create_h_tunnel(gamemap, new_y, prev_x, new_x)
             rooms.append(new_room)
+            place_objects(new_room)
             num_rooms += 1
             log.debug('Room created at {} [{}]'.format(
                 new_room.center(), len(rooms)
