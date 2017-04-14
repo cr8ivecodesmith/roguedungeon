@@ -3,7 +3,7 @@ import logging
 from rogue import settings
 from rogue.consoles import tdl, root_console, console
 from rogue.entities.generic import GameObject
-from rogue.generators import monsters
+from rogue.generators import monsters as g_mon, player as g_player
 from rogue.handlers import game_action, player_action
 from rogue.worlds.dungeon import Dungeon
 from rogue.utils import colors
@@ -16,17 +16,8 @@ log = logging.getLogger('default')
 def run():
     log.debug('Initializing {}'.format(settings.GAME_TITLE))
     dungeon = Dungeon()
-    monsters.generate(dungeon)
-    player = GameObject(
-        0, 0,
-        '@', 'Player', colors.white,
-        blocks=True
-    )
-    player.x, player.y = dungeon.rooms[0].center()
-    log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))
-
-    dungeon.entities.add('player', player)
-
+    g_mon.generate(dungeon)
+    g_player.generate(dungeon)
     dungeon.render.compute_FOV()
     while not tdl.event.is_window_closed():
         dungeon.render.all()
