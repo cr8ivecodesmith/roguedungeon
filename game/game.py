@@ -111,16 +111,12 @@ def run():
     log.info('Game started')
     player = GameObject(
         st.GAME_SCREEN_WIDTH // 2, st.GAME_SCREEN_HEIGHT // 2,
-        '@', (255, 255, 255)
+        '@', 'player', (255, 255, 255), blocks=True
     )
-    npc = GameObject(
-        player.x - 5, player.y,
-        '@', (255, 255, 0)
-    )
-    objects = [
-        npc,
-        player,
-    ]
+    objects = []
+    for r in  rooms:
+        objects.extend(r.room_objects)
+    objects.append(player)
 
     # Place the player at the center of the first room
     player.x, player.y = rooms[0].center()
