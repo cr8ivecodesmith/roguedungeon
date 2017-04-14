@@ -9,40 +9,46 @@ from .map import gamemap, rooms
 log = logging.getLogger('default')
 
 
-def handle_keys(obj, realtime=False):
-    if realtime:
-        keypress = False
+def get_user_input():
+    """Get user input event
+    Returns none on error or when there's no activity during realtime movement
+
+    """
+    user_input = None
+    if st.REALTIME_MOVEMENT:
         for event in tdl.event.get():
             if event.type == 'KEYDOWN':
                 user_input = event
-                keypress = True
-        if not keypress:
-            return
     else:
         user_input = tdl.event.key_wait()
+    return user_input
 
-    if user_input.key == 'ENTER' and user_input.alt:
-        log.debug('Full screen activated!')
-        tdl.set_fullscreen(True)
-    elif user_input.key == 'ESCAPE':
-        log.debug('Smell ya later!')
-        return True
+
+def move_player(obj, user_input):
+    has_moved = False
 
     if user_input.key == 'UP':
         obj.move(0, -1)
         log.debug('Key press UP ({}, {})'.format(obj.x, obj.y))
+        has_moved = True
     if user_input.key == 'DOWN':
         obj.move(0, 1)
         log.debug('Key press DOWN ({}, {})'.format(obj.x, obj.y))
+        has_moved = True
     if user_input.key == 'LEFT':
         obj.move(-1, 0)
         log.debug('Key press LEFT ({}, {})'.format(obj.x, obj.y))
+        has_moved = True
     if user_input.key == 'RIGHT':
         obj.move(1, 0)
         log.debug('Key press RIGHT ({}, {})'.format(obj.x, obj.y))
+        has_moved = True
+
+    return has_moved
 
 
-def render_all(objects):
+def render_all(objects, player_moved):
+    log.debug('Player has moved: {}'.format(player_moved))
     # Draw the map first
     for y in range(st.GAME_MAP_HEIGHT):
         for x in range(st.GAME_MAP_WIDTH):
@@ -88,19 +94,31 @@ def run():
 
     # Place the player at the center of the first room
     player.x, player.y = rooms[0].center()
-
+    has_moved = False
     while not tdl.event.is_window_closed():
+        # Reset user input handler
+        user_input= None
+
         # Draw the objects
-        render_all(objects)
+        render_all(objects, player_moved=has_moved)
         tdl.flush()
 
         # Clear the previous pos of the objects
         for obj in objects:
             obj.clear()
 
-        # Set the new player pos based on key strokes
-        end_game = handle_keys(player, st.REALTIME_MOVEMENT)
+        # Handle user input
+        user_input = get_user_input()
+        if not user_input:
+            has_moved = False  # No user input means the user has not moved
+            continue
 
-        # Handle exit game
-        if end_game:
+        if user_input.key == 'ENTER' and user_input.alt:
+            log.debug('Full screen activated!')
+            tdl.set_fullscreen(True)
+        elif user_input.key == 'ESCAPE':
+            log.debug('Smell ya later!')
             break
+
+        # Set the new player pos based on user_input
+        has_moved = move_player(player, user_input)
