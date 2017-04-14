@@ -6,22 +6,18 @@ class GameObject:
     monster, item, stairs, wall, etc.
 
     """
-    def __init__(self, x, y, char, color):
+    def __init__(self, x, y, char, name, color, blocks=False):
         self.x, self.y = x, y
-        self.char, self.color = char, color
+        self.char, self.name, self.color = char, name, color
+        self.blocks = blocks
 
     def move(self, dx, dy):
         """Move by the given amount
 
         """
-        from .map import gamemap
+        from .map import gamemap, rooms, is_blocked
 
-        movable = (
-            not gamemap[self.x + dx][self.y + dy].blocked
-            and dx != None != dy
-        )
-
-        if movable:
+        if not is_blocked(gamemap, rooms, self.x, self.y):
             self.x += dx
             self.y += dy
 
@@ -57,6 +53,7 @@ class Rect:
     def __init__(self, x, y, w, h):
         self.x1, self.y1 = x, y
         self.x2, self.y2 = (x + w), (y + h)
+        self.room_objects = []
 
     def center(self):
         """Returns the center coordinate of the room
