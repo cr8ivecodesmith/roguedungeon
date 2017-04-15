@@ -44,10 +44,7 @@ class PlayerAction:
                 break
 
         if target:
-            log.info(
-                'The {} laughs at your sorry excuse of an attack.'.format(
-                    target.name.title()
-            ))
+            self.player.fighter.attack(target)
             self.action = DO_FIGHT
         else:
             self.player.move(*move_amount)
