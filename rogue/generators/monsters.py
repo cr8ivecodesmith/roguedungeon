@@ -2,6 +2,8 @@ import logging
 from random import randint
 
 from rogue import settings
+from rogue.entities.components.fighters import FighterComponent
+from rogue.entities.components.monsters import BasicMonsterAIComponent
 from rogue.entities.generic import GameObject
 from rogue.utils import colors
 
@@ -24,16 +26,22 @@ def generate(dungeon):
             chance = randint(0, 100)
             if chance < 80:
                 # create an orc
+                fighter_component = FighterComponent(hp=10, defense=0, power=3)
+                ai_component = BasicMonsterAIComponent()
                 obj = GameObject(
                     x, y, 'o', 'Orc',
                     colors.desaturated_green,
-                    blocks=True
+                    blocks=True,
+                    fighter=fighter_component, ai=ai_component
                 )
             else:
                 # create a troll
+                fighter_component = FighterComponent(hp=16, defense=1, power=4)
+                ai_component = BasicMonsterAIComponent()
                 obj = GameObject(
                     x, y, 'T', 'Troll',
                     colors.darker_green,
-                    blocks=True
+                    blocks=True,
+                    fighter=fighter_component, ai=ai_component
                 )
             dungeon.entities.add('monster', obj)
