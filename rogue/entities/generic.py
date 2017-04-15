@@ -1,4 +1,5 @@
 import logging
+import math
 
 from rogue.consoles import console
 
@@ -14,17 +15,35 @@ class GameObject:
     def __init__(self,
         x, y,
         char, name, color,
-        blocks=False,
-        speed=1,
-        dungeon=None
+        blocks=False, always_visible=False,
+        fighter=None, ai=None, item=None, equipment=None,
+        speed=1, dungeon=None
     ):
         self._x, self._y = x, y
         self.prev_x, self.prev_y = x, y
 
         self.char, self.name, self.color = char, name, color
         self.blocks = blocks
+        self.always_visible = always_visible
         self.speed = speed
         self.dungeon = dungeon
+
+        # Set components
+        self.fighter = fighter
+        if fighter:
+            self.fighter.owner = self
+
+        self.ai = ai
+        if ai:
+            self.ai.owner = self
+
+        self.item = item
+        if item:
+            self.item.owner = self
+
+        self.equipment = equipment
+        if equipment:
+            self.equipment.owner = self
 
     def __str__(self):
         return '{}@{}'.format(
@@ -67,6 +86,43 @@ class GameObject:
         if passable:
             self.x += new_x
             self.y += new_y
+
+    def move_towards(self, target_x, target_y):
+        """Basic path-finding functionality.
+
+        Get a vector from the object to the target, then normalize so it has
+        the same direction but has a length of exactly 1 tile. Then we round it
+        so the resulting vector is an integer and not a fraction (dx and dy can
+        only take values that is -1, 1, or 0). Finally, the object moves by
+        this amount.
+
+        """
+        # vector and distance from this object to its target
+        dx = target_x - self.x
+        dy = target_y - self.y
+        distance = math.sqrt(dx**2 + dy**2)
+
+        # normalize it to lenght 1 (preserving direction), then round it and
+        # convert to int so the movement is restricted to the map grid.
+        dx = int(round(dx / distance))
+        dy = int(round(dy / distance))
+        self.move(dx, dy)
+
+    def distance_to(self, other):
+        """Return the distance to another object.
+
+        """
+        dx = other.x - self.x
+        dy = other.y - self.y
+        return math.sqrt(dx**2 + dy**2)
+
+    def distance(self, x, y):
+        """Return distance to a given coordinate
+
+        """
+        dx = x - self.x
+        dy = y - self.y
+        return math.sqrt(dx**2 + dy**2)
 
     def draw(self):
         """Draw the character at this position
