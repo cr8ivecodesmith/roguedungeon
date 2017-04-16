@@ -47,6 +47,7 @@ class GameWorld:
         self.dungeons = []
         self.current_dungeon = None
         self.render = RenderManager(self)
+        self.player = None
 
     def generate_dungeon(self, current=False):
         depth = 0 if not self.dungeons else len(self.dungeons)

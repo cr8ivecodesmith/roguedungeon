@@ -1,30 +1,18 @@
 import logging
 
-from rogue import settings
-from rogue.entities.components.fighters import FighterComponent
-from rogue.entities.generic import GameObject
-from rogue.utils import colors
-from rogue.handlers.death import player_death
+from rogue.entities.player import Player
 
 
 log = logging.getLogger('default')
 
 
-def generate(dungeon):
+def generate(gameworld):
     """Creates a player on the first room
 
     """
-    x, y = dungeon.rooms[0].center()
-
-    fighter_component = FighterComponent(
-        hp=30, defense=2, power=5,
-        death_handler=player_death
-    )
-    player = GameObject(
-        x=x, y=y,
-        char='@', name='Player', color=colors.white,
-        blocks=True,
-        fighter=fighter_component
-    )
+    dungeon = gameworld.current_dungeon
+    player = Player(world=gameworld, dungeon=dungeon)
     log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))
+
+    gameworld.player = player
     dungeon.entities.add('player', player)
