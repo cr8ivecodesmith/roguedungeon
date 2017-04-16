@@ -4,6 +4,7 @@ import os
 # Path settings
 BASEDIR = os.path.dirname(os.path.abspath(__file__))
 PROJECTDIR = os.path.dirname(BASEDIR)
+DATADIR = os.path.join(BASEDIR, 'data')
 LOGDIR = os.path.join(PROJECTDIR, 'logs')
 
 
