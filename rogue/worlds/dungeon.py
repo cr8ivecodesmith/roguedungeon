@@ -3,10 +3,11 @@ import logging
 from random import randint
 
 from rogue import settings
-from rogue.consoles import tdl, root_console, console
+from rogue.consoles import tdl, root_console, console, panel
 from rogue.handlers.status import ENTITY_STATUS
 from rogue.worlds.tiles import Tile
 from rogue.worlds.rooms import Room
+from rogue.utils import colors
 
 
 log = logging.getLogger('default')
@@ -218,7 +219,7 @@ class RenderManager:
         self.draw_entities()
         self.flush()
         self.draw_entities(clear=True)
-        self.draw_player_stats()
+        self.draw_world_interface()
 
     def flush(self):
         # (Blit) the console to root_console
@@ -320,10 +321,17 @@ class RenderManager:
         else:
             self.dungeon.entities.player.draw()
 
-    def draw_player_stats(self):
+    def draw_world_interface(self):
         player = self.dungeon.entities.player
-        msg = 'HP: {} / {}'.format(player.fighter.hp, player.fighter.max_hp)
-        console.draw_str(1, settings.GAME_SCREEN_HEIGHT - 2, msg)
+        panel.clear(fg=colors.white, bg=colors.black)
+        self.dungeon.world.render.draw_bar(
+            1, 1,
+            settings.IFACE_BAR_WIDTH, 'HP',
+            player.fighter.hp, player.fighter.max_hp,
+            colors.light_red, colors.dark_red
+        )
+        self.dungeon.world.render.draw_messages()
+        self.dungeon.world.render.flush()
 
 
 class Dungeon:

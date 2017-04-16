@@ -13,9 +13,10 @@ class BasicMonsterAIComponent:
 
         if (monster.x, monster.y) in visible_tiles:
             # move towards the player
-            log.info('The {} growls!'.format(self.owner.name.title()))
-            log.info('The {} moves toward you.'.format(
-                self.owner.name.title()))
+            msg = 'The {} moves toward you.'.format(
+                self.owner.name.title()
+            )
+            dungeon.world.message(msg)
 
             if monster.distance_to(player) >= 2:
                 monster.move_towards(player.x, player.y)

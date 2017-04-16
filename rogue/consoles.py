@@ -17,8 +17,13 @@ root_console = tdl.init(
 )
 
 console = tdl.Console(
-    settings.GAME_SCREEN_WIDTH,
-    settings.GAME_SCREEN_HEIGHT
+    settings.GAME_MAP_WIDTH,
+    settings.GAME_MAP_HEIGHT
 )
 
 tdl.setFPS(settings.GAME_FPS)
+
+panel = tdl.Console(
+    settings.GAME_SCREEN_WIDTH,
+    settings.IFACE_PANEL_HEIGHT
+)
