@@ -2,22 +2,17 @@ import logging
 import sys
 
 from rogue.utils.controls import get_move_direction, get_move_amount
+from rogue.handlers.status import ENTITY_STATUS
 
 
 log = logging.getLogger('default')
 
-DO_NOTHING = 'no-action'
-DO_SKIP = 'skip'
-DO_FIGHT = 'fight'
-DO_MOVE = 'move'
-
 
 class PlayerAction:
-    def __init__(self, dungeon, user_input):
-        self.dungeon = dungeon
+    def __init__(self, gameworld, user_input):
+        self.dungeon = gameworld.current_dungeon
         self.user_input = user_input
-        self.player = dungeon.entities.player
-        self._action = None
+        self.player = self.dungeon.entities.player
 
         direction = get_move_direction(self.user_input)
         if direction:
@@ -25,27 +20,19 @@ class PlayerAction:
         else:
             self.do_other_action()
 
-    @property
-    def action(self):
-        return self._action
-
-    @action.setter
-    def action(self, val):
-        self._action = val
-
     def move_or_attack(self, direction):
         move_amount = get_move_amount(direction)
         x, y = self.player.x + move_amount[0], self.player.y + move_amount[1]
 
         target = None
         for ent in self.dungeon.entities.all(iterator=True):
-            if ent.x == x and ent.y == y:
+            if ent.fighter and ent.x == x and ent.y == y:
                 target = ent
                 break
 
         if target:
             self.player.fighter.attack(target)
-            self.action = DO_FIGHT
+            self.player.status = ENTITY_STATUS.FIGHT
         else:
             self.player.move(*move_amount)
             log.debug('Player has moved [{}] from {} to {}'.format(
@@ -53,14 +40,14 @@ class PlayerAction:
                 (self.player.prev_x, self.player.prev_y),
                 (self.player.x, self.player.y)
             ))
-            self.action = DO_MOVE
+            self.player.status = ENTITY_STATUS.MOVE
 
     def do_other_action(self):
-        self.action = DO_NOTHING
+        self.player.status = ENTITY_STATUS.NO_ACTION
 
 
-def process(user_input, dungeon):
+def process(user_input, gameworld):
     if not user_input:
         return
-    p_action = PlayerAction(dungeon, user_input)
-    return p_action.action
+    PlayerAction(gameworld, user_input)
+    return

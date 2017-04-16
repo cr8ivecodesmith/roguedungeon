@@ -2,6 +2,7 @@ import logging
 import math
 
 from rogue.consoles import console
+from rogue.handlers.status import ENTITY_STATUS
 
 
 log = logging.getLogger('default')
@@ -27,6 +28,7 @@ class GameObject:
         self.always_visible = always_visible
         self.speed = speed
         self.dungeon = dungeon
+        self.status = ENTITY_STATUS.NO_ACTION
 
         # Set components
         self.fighter = fighter
