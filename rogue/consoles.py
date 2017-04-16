@@ -21,7 +21,7 @@ console = tdl.Console(
     settings.GAME_MAP_HEIGHT
 )
 
-tdl.setFPS(settings.GAME_FPS)
+tdl.set_fps(settings.GAME_FPS)
 
 panel = tdl.Console(
     settings.GAME_SCREEN_WIDTH,

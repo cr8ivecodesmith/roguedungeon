@@ -16,7 +16,7 @@ GAME_FULLSCREEN = False
 GAME_FPS = 20
 REALTIME_MOVEMENT = False
 
-GAME_FONT = os.path.join(BASEDIR, 'fonts', 'arial10x10.png')
+GAME_FONT = os.path.join(BASEDIR, 'fonts', 'terminal10x10.png')
 GAME_FONT_GREYSCALE = True
 GAME_FONT_ALTLAYOUT = True
 
@@ -52,7 +52,7 @@ FOV_TORCH_RADIUS = 10
 
 
 # Log settings
-DEBUG = True
+DEBUG = False
 LOGLEVEL = 'INFO'
 LOGFILE = os.path.join(PROJECTDIR, 'logs', 'game.log')
 LOGGING = {

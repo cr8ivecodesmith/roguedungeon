@@ -10,8 +10,7 @@ log = logging.getLogger('default')
 def player_death(player):
     world = player.dungeon.world
 
-    msg = '{} died!'.format(player.name.title())
-    world.message(msg)
+    world.message('You died!', color=colors.red)
 
     player.status = ENTITY_STATUS.DEAD
     player.char = '%'

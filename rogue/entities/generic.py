@@ -130,7 +130,10 @@ class GameObject:
         """Draw the character at this position
 
         """
-        console.draw_char(self.x, self.y, self.char, self.color)
+        console.draw_char(
+            self.x, self.y, self.char,
+            fg=self.color, bg=None
+        )
 
     def clear(self):
         """Clear the character at this position
