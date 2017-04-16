@@ -4,6 +4,7 @@ from random import randint
 
 from rogue import settings
 from rogue.consoles import tdl, root_console, console
+from rogue.handlers.status import ENTITY_STATUS
 from rogue.worlds.tiles import Tile
 from rogue.worlds.rooms import Room
 
@@ -217,6 +218,7 @@ class RenderManager:
         self.draw_entities()
         self.flush()
         self.draw_entities(clear=True)
+        self.draw_player_stats()
 
     def flush(self):
         # (Blit) the console to root_console
@@ -283,6 +285,18 @@ class RenderManager:
 
     def draw_entities(self, clear=False):
         log.debug('{} entities'.format('Clearing' if clear else 'Drawing'))
+
+        dead_monsters = [i for i in self.dungeon.entities.monsters
+                         if i.status == ENTITY_STATUS.DEAD]
+        monsters = [i for i in self.dungeon.entities.monsters
+                    if i.status != ENTITY_STATUS.DEAD]
+
+        for ent in dead_monsters:
+            if clear:
+                ent.clear()
+            elif (ent.x, ent.y) in self.visible_tiles:
+                ent.draw()
+
         for ent in self.dungeon.entities.loots:
             if clear:
                 ent.clear()
@@ -295,7 +309,7 @@ class RenderManager:
             elif (ent.x, ent.y) in self.visible_tiles:
                 ent.draw()
 
-        for ent in self.dungeon.entities.monsters:
+        for ent in monsters:
             if clear:
                 ent.clear()
             elif (ent.x, ent.y) in self.visible_tiles:
@@ -306,9 +320,19 @@ class RenderManager:
         else:
             self.dungeon.entities.player.draw()
 
+    def draw_player_stats(self):
+        player = self.dungeon.entities.player
+        msg = 'HP: {} / {}'.format(player.fighter.hp, player.fighter.max_hp)
+        console.draw_str(1, settings.GAME_SCREEN_HEIGHT - 2, msg)
+
 
 class Dungeon:
-    def __init__(self):
+
+    def __init__(self, world, name, depth):
+        self.world = world
+        self.name = name
+        self.depth = depth
+
         # Initializes the `dungeon_map` attribute
         self.map_manager = MapManager(self)
 
@@ -320,3 +344,6 @@ class Dungeon:
 
         # Initializes the render manager
         self.render = RenderManager(self)
+
+    def __str__(self):
+        return '{} ({})'.format(self.name, self.depth)
