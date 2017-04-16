@@ -12,14 +12,9 @@ def get_user_input():
     Returns none when there's no activity during realtime movement
 
     """
-    user_input = None
-    if not settings.REALTIME_MOVEMENT:
-        user_input = tdl.event.key_wait()
-    else:
-        for event in tdl.event.get():
-            if event.type == 'KEYDOWN':
-                user_input = event
-    return user_input
+    for event in tdl.event.get():
+        if event.type == 'KEYDOWN' or event.type == 'MOUSEMOTION':
+            return event
 
 
 def get_move_direction(user_input):

@@ -17,7 +17,8 @@ log = logging.getLogger('default')
 def process_user_input(user_input, gameworld):
     if not user_input:
         return
-
+    if user_input and user_input.type != 'KEYDOWN':
+        return
     if user_input.key == 'ESCAPE':
         gameworld.status = GAME_STATUS.QUIT
         return
@@ -43,10 +44,15 @@ def run():
 
     dungeon.render.compute_FOV()
     dungeon.render.all()
+
+    mouse_coords = None
     while not tdl.event.is_window_closed():
-        dungeon.render.all()
+        dungeon.render.all(mouse_coords)
 
         user_input = get_user_input()
+        if user_input and user_input.type == 'MOUSEMOTION':
+            mouse_coords = user_input.cell
+
         log.debug('User input: {}'.format(user_input))
 
         process_user_input(user_input, gameworld)

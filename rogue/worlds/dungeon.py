@@ -210,7 +210,7 @@ class RenderManager:
         self.dungeon = dungeon
         self.compute_FOV()
 
-    def all(self):
+    def all(self, mouse_coords=None):
         player = self.dungeon.entities.player
         if player.has_moved():
             self.compute_FOV()
@@ -219,7 +219,7 @@ class RenderManager:
         self.draw_entities()
         self.flush()
         self.draw_entities(clear=True)
-        self.draw_world_interface()
+        self.draw_world_interface(mouse_coords)
 
     def flush(self):
         # (Blit) the console to root_console
@@ -321,7 +321,7 @@ class RenderManager:
         else:
             self.dungeon.entities.player.draw()
 
-    def draw_world_interface(self):
+    def draw_world_interface(self, mouse_coords=None):
         player = self.dungeon.entities.player
         panel.clear(fg=colors.white, bg=colors.black)
         self.dungeon.world.render.draw_bar(
@@ -330,8 +330,25 @@ class RenderManager:
             player.fighter.hp, player.fighter.max_hp,
             colors.light_red, colors.dark_red
         )
+
+        names_under_mouse = self.get_names_under_mouse(mouse_coords)
+        if names_under_mouse:
+            panel.draw_str(
+                1, 0, names_under_mouse,
+                bg=None, fg=colors.light_gray
+            )
+
         self.dungeon.world.render.draw_messages()
         self.dungeon.world.render.flush()
+
+    def get_names_under_mouse(self, coords=None):
+        if not coords:
+            return
+        x, y = coords
+        visible = self.visible_tiles
+        names = [e.name for e in self.dungeon.entities.all(iterator=True)
+                 if (e.x, e.y) == coords and (e.x, e.y) in visible]
+        return (', '.join(names)).capitalize()
 
 
 class Dungeon:

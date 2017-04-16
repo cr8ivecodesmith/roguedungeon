@@ -14,7 +14,6 @@ GAME_SCREEN_HEIGHT = 50
 GAME_TITLE = 'Rogue Dungeon'
 GAME_FULLSCREEN = False
 GAME_FPS = 20
-REALTIME_MOVEMENT = False
 
 GAME_FONT = os.path.join(BASEDIR, 'fonts', 'terminal10x10.png')
 GAME_FONT_GREYSCALE = True
