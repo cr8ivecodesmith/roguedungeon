@@ -4,7 +4,7 @@ from rogue import settings
 from rogue.consoles import tdl, root_console, console
 from rogue.entities.generic import GameObject
 from rogue.generators import monsters as g_mon, player as g_player
-from rogue.handlers import player_action, monster_action
+from rogue.handlers.action import player_action, monster_action
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
 from rogue.utils import colors
 from rogue.utils.controls import get_user_input
@@ -18,22 +18,12 @@ def process_user_input(user_input, gameworld):
     if not user_input:
         return
 
-    dungeon = gameworld.current_dungeon
-    player = dungeon.entities.player
-
     if user_input.key == 'ESCAPE':
         gameworld.status = GAME_STATUS.QUIT
         return
 
-    player_action.process(user_input, gameworld)
-
-    if (
-        gameworld.status == GAME_STATUS.PLAY
-        and player.status != ENTITY_STATUS.NO_ACTION
-    ):
-        # Make sure that monsters only take their turns when the player takes
-        # and action.
-        monster_action.process(dungeon)
+    player_action(user_input, gameworld)
+    monster_action(gameworld)
 
 
 def run():
