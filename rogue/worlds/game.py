@@ -95,12 +95,17 @@ class RenderManager:
         player = self.world.player
 
         # We split the monster list since we want to draw the dead ones first
-        dead_monsters = [i for i in dungeon.entities.monsters
-                         if i.status == ENTITY_STATUS.DEAD]
-        monsters = [i for i in dungeon.entities.monsters
-                    if i.status != ENTITY_STATUS.DEAD]
+        dead_monsters = (i for i in dungeon.entities.monsters
+                         if i.status == ENTITY_STATUS.DEAD)
+        live_monsters = (i for i in dungeon.entities.monsters
+                         if i.status != ENTITY_STATUS.DEAD)
+        entities = it.chain(
+            dead_monsters,
+            dungeon.entities.loot,
+            live_monsters
+        )
 
-        for ent in it.chain(dead_monsters, dungeon.entities.loot, monsters):
+        for ent in entities:
             if clear:
                 ent.clear()
             elif (ent.x, ent.y) in player.visible_tiles:

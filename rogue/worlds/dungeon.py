@@ -1,3 +1,4 @@
+import itertools as it
 import logging
 
 from random import randint
@@ -154,7 +155,6 @@ class EntityManager:
         self._entities = {
             'monster': [],
             'loot': [],
-            'npc': [],
         }
 
     @property
@@ -165,19 +165,13 @@ class EntityManager:
     def loot(self):
         return self._entities.get('loot')
 
-    @property
-    def npcs(self):
-        return self._entities.get('npc')
-
     def all(self, iterator=False):
+        if iterator:
+            return it.chain(*self._entities.values())
+
         ents = []
         for group in self._entities.values():
-            if not iterator:
-                ents.extend(group)
-                continue
-            else:
-                for ent in group:
-                    yield ent
+            ents.extend(group)
         return ents
 
     def add(self, kind, entity):
