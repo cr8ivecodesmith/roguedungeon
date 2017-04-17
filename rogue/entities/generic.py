@@ -82,8 +82,12 @@ class GameObject:
     @dungeon.setter
     def dungeon(self, val):
         self.__dungeon = val
-        if self.__dungeon and self.fighter:
-            # Compute FOV when a new dungeon is assigned for fighter types
+        do_compute = (
+            self.__dungeon and
+            self.fighter and
+            self.status != ENTITY_STATUS.DEAD
+        )
+        if do_compute:
             self.compute_FOV()
 
     @property
