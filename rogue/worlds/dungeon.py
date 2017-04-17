@@ -181,7 +181,7 @@ class EntityManager:
 
 class Dungeon:
 
-    def __init__(self, world, name, depth):
+    def __init__(self, world, name=None, depth=None):
         self.world = world
         self.name = name
         self.depth = depth

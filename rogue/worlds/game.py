@@ -4,10 +4,10 @@ import textwrap
 
 from rogue import settings
 from rogue.consoles import panel, root_console, console, tdl
-from rogue.generators.name import random_name
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
 from rogue.worlds.dungeon import Dungeon
 from rogue.utils import colors
+from rogue.utils.name_generator import random_name
 
 
 log = logging.getLogger('default')
