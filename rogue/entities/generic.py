@@ -82,7 +82,9 @@ class GameObject:
     @dungeon.setter
     def dungeon(self, val):
         self.__dungeon = val
-        self.compute_FOV()
+        if self.__dungeon and self.fighter:
+            # Compute FOV when a new dungeon is assigned for fighter types
+            self.compute_FOV()
 
     @property
     def visible_tiles(self):
@@ -174,3 +176,7 @@ class GameObject:
                 radius=settings.FOV_TORCH_RADIUS,
                 lightWalls=settings.FOV_LIGHT_WALLS
             )
+        else:
+            log.warn('Failed to compute FOV for {}: Dungeon not set!'.format(
+                self.name
+            ))
