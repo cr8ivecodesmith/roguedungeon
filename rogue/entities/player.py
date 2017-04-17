@@ -5,7 +5,7 @@ from rogue.utils import colors
 
 
 class Player(GameObject):
-    _dungeon = None
+    __world = None
     inventory = []
     equipment = {
         'right_hand': None,
@@ -15,8 +15,7 @@ class Player(GameObject):
 
     def __init__(
         self, name=None, x=0, y=0,
-        world=None, dungeon=None,
-        **kwargs
+        world=None, **kwargs
     ):
         name = name or 'Stranger'
         char, color = '@', colors.white
@@ -34,14 +33,12 @@ class Player(GameObject):
         )
 
         self.world = world
-        self.dungeon = dungeon
 
     @property
-    def dungeon(self):
-        return self._dungeon
+    def world(self):
+        return self.__world
 
-    @dungeon.setter
-    def dungeon(self, val):
-        if self.dungeon and self.dungeon.rooms:
-            self.x, self.y = self.dungeon.rooms[0].center()
-        self._dungeon = val
+    @world.setter
+    def world(self, val):
+        self.__world = val
+        self.__world.player = self

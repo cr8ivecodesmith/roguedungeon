@@ -1,6 +1,5 @@
 import logging
 
-from rogue import settings
 from rogue.consoles import tdl
 
 
@@ -22,18 +21,19 @@ def get_move_direction(user_input):
 
     """
     direction = None
-    if (user_input.key == 'UP' or 
-        (user_input.key == 'CHAR' and user_input.char == 'k')):
+    if (
+        user_input.key == 'UP' or
+        (user_input.key == 'CHAR' and user_input.char == 'k')
+    ):
         direction = 'up'
-    elif (user_input.key == 'DOWN' or 
-        (user_input.key == 'CHAR' and user_input.char == 'j')):
+    elif (user_input.key == 'DOWN' or
+          (user_input.key == 'CHAR' and user_input.char == 'j')):
         direction = 'down'
-        has_moved = True
-    elif (user_input.key == 'LEFT' or 
-        (user_input.key == 'CHAR' and user_input.char == 'h')):
+    elif (user_input.key == 'LEFT' or
+          (user_input.key == 'CHAR' and user_input.char == 'h')):
         direction = 'left'
-    elif (user_input.key == 'RIGHT' or 
-        (user_input.key == 'CHAR' and user_input.char == 'l')):
+    elif (user_input.key == 'RIGHT' or
+          (user_input.key == 'CHAR' and user_input.char == 'l')):
         direction = 'right'
     elif user_input.key == 'CHAR' and user_input.char == 'y':
         direction = 'up+left'

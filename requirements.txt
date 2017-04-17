@@ -7,3 +7,5 @@ sphinx
 
 # utilities
 ipython
+flake8
+pyflakes

@@ -3,11 +3,8 @@ import logging
 from random import randint
 
 from rogue import settings
-from rogue.consoles import tdl, root_console, console, panel
-from rogue.handlers.status import ENTITY_STATUS
 from rogue.worlds.tiles import Tile
 from rogue.worlds.rooms import Room
-from rogue.utils import colors
 
 
 log = logging.getLogger('default')
@@ -25,7 +22,7 @@ class MapManager:
             settings.GAME_MAP_WIDTH,
             settings.GAME_MAP_HEIGHT
         ))
-        dungeon_map = [[ Tile(True) for y in range(settings.GAME_MAP_HEIGHT)]
+        dungeon_map = [[Tile(True) for y in range(settings.GAME_MAP_HEIGHT)]
                        for x in range(settings.GAME_MAP_WIDTH)]
         return dungeon_map
 
@@ -109,8 +106,6 @@ class RoomManager:
                         self.carve_h_tunnel(new_y, prev_x, new_x)
                 rooms.append(new_room)
 
-                #place_objects(new_room)
-
                 num_rooms += 1
                 log.debug('Room created at {} [{}]'.format(
                     new_room.center(), len(rooms)
@@ -157,23 +152,17 @@ class EntityManager:
     def __init__(self, dungeon):
         self.dungeon = dungeon
         self._entities = {
-            'player': [],
             'monster': [],
             'loot': [],
             'npc': [],
         }
 
     @property
-    def player(self):
-        player = self._entities.get('player')
-        return player[0] if player else None
-
-    @property
     def monsters(self):
         return self._entities.get('monster')
 
     @property
-    def loots(self):
+    def loot(self):
         return self._entities.get('loot')
 
     @property
@@ -196,161 +185,6 @@ class EntityManager:
         self._entities[kind].append(entity)
 
 
-class RenderManager:
-    """Manages dungeon rendering
-
-    Requires:
-    - MapManager
-    - RoomManager
-    - EntityManager
-
-    """
-    def __init__(self, dungeon):
-        self.__visible_tiles = []
-        self.dungeon = dungeon
-        self.compute_FOV()
-
-    def all(self, mouse_coords=None):
-        player = self.dungeon.entities.player
-        if player.has_moved():
-            self.compute_FOV()
-
-        self.draw_dungeon_map()
-        self.draw_entities()
-        self.flush()
-        self.draw_entities(clear=True)
-        self.draw_world_interface(mouse_coords)
-
-    def flush(self):
-        # (Blit) the console to root_console
-        root_console.blit(
-            console,
-            0, 0,
-            settings.GAME_SCREEN_WIDTH, settings.GAME_SCREEN_HEIGHT,
-            0, 0
-        )
-        tdl.flush()
-
-    @property
-    def visible_tiles(self):
-        return self.__visible_tiles
-
-    def compute_FOV(self):
-        """Computes the current FOV based on the current player position
-
-        """
-        player = self.dungeon.entities.player
-        if player:
-            self.__visible_tiles = tdl.map.quickFOV(
-                player.x, player.y,
-                self.dungeon.map_manager.is_visible_tile,
-                fov=settings.FOV_ALGO,
-                radius=settings.FOV_TORCH_RADIUS,
-                lightWalls=settings.FOV_LIGHT_WALLS
-            )
-
-    def draw_dungeon_map(self):
-        log.debug('Drawing dungeon map')
-        for y in range(settings.GAME_MAP_HEIGHT):
-            for x in range(settings.GAME_MAP_WIDTH):
-                visible = (x, y) in self.visible_tiles
-                wall = self.dungeon.dungeon_map[x][y].block_sight
-                if not visible:
-                    if self.dungeon.dungeon_map[x][y].explored:
-                        if wall:
-                            console.draw_char(
-                                x, y, settings.WALL_CHAR,
-                                fg=settings.WALL_FG_COLOR,
-                                bg=settings.WALL_BG_COLOR_DARK
-                            )
-                        else:
-                            console.draw_char(
-                                x, y, settings.GROUND_CHAR,
-                                fg=settings.GROUND_FG_COLOR,
-                                bg=settings.GROUND_BG_COLOR_DARK
-                            )
-                else:
-                    self.dungeon.dungeon_map[x][y].explored = True
-                    if wall:
-                        console.draw_char(
-                            x, y, settings.WALL_CHAR,
-                            fg=settings.WALL_FG_COLOR,
-                            bg=settings.WALL_BG_COLOR_LIGHT
-                        )
-                    else:
-                        console.draw_char(
-                            x, y, settings.GROUND_CHAR,
-                            fg=settings.GROUND_FG_COLOR,
-                            bg=settings.GROUND_BG_COLOR_LIGHT
-                        )
-
-    def draw_entities(self, clear=False):
-        log.debug('{} entities'.format('Clearing' if clear else 'Drawing'))
-
-        dead_monsters = [i for i in self.dungeon.entities.monsters
-                         if i.status == ENTITY_STATUS.DEAD]
-        monsters = [i for i in self.dungeon.entities.monsters
-                    if i.status != ENTITY_STATUS.DEAD]
-
-        for ent in dead_monsters:
-            if clear:
-                ent.clear()
-            elif (ent.x, ent.y) in self.visible_tiles:
-                ent.draw()
-
-        for ent in self.dungeon.entities.loots:
-            if clear:
-                ent.clear()
-            elif (ent.x, ent.y) in self.visible_tiles:
-                ent.draw()
-
-        for ent in self.dungeon.entities.npcs:
-            if clear:
-                ent.clear()
-            elif (ent.x, ent.y) in self.visible_tiles:
-                ent.draw()
-
-        for ent in monsters:
-            if clear:
-                ent.clear()
-            elif (ent.x, ent.y) in self.visible_tiles:
-                ent.draw()
-
-        if clear:
-            self.dungeon.entities.player.clear()
-        else:
-            self.dungeon.entities.player.draw()
-
-    def draw_world_interface(self, mouse_coords=None):
-        player = self.dungeon.entities.player
-        panel.clear(fg=colors.white, bg=colors.black)
-        self.dungeon.world.render.draw_bar(
-            1, 1,
-            settings.IFACE_BAR_WIDTH, 'HP',
-            player.fighter.hp, player.fighter.max_hp,
-            colors.light_red, colors.dark_red
-        )
-
-        names_under_mouse = self.get_names_under_mouse(mouse_coords)
-        if names_under_mouse:
-            panel.draw_str(
-                1, 0, names_under_mouse,
-                bg=None, fg=colors.light_gray
-            )
-
-        self.dungeon.world.render.draw_messages()
-        self.dungeon.world.render.flush()
-
-    def get_names_under_mouse(self, coords=None):
-        if not coords:
-            return
-        x, y = coords
-        visible = self.visible_tiles
-        names = [e.name for e in self.dungeon.entities.all(iterator=True)
-                 if (e.x, e.y) == coords and (e.x, e.y) in visible]
-        return (', '.join(names)).capitalize()
-
-
 class Dungeon:
 
     def __init__(self, world, name, depth):
@@ -366,9 +200,6 @@ class Dungeon:
 
         # Creates the `entities` attribute
         self.entities = EntityManager(self)
-
-        # Initializes the render manager
-        self.render = RenderManager(self)
 
     def __str__(self):
         return '{} ({})'.format(self.name, self.depth)

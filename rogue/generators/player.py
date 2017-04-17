@@ -6,13 +6,13 @@ from rogue.entities.player import Player
 log = logging.getLogger('default')
 
 
-def generate(gameworld):
-    """Creates a player on the first room
+def generate(gameworld, dungeon):
+    """Initializes the player on the first room
 
     """
-    dungeon = gameworld.current_dungeon
-    player = Player(world=gameworld, dungeon=dungeon)
-    log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))
-
+    player = Player(world=gameworld)
     gameworld.player = player
-    dungeon.entities.add('player', player)
+    player.dungeon = dungeon
+    player.x, player.y = dungeon.rooms[0].center()
+
+    log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))

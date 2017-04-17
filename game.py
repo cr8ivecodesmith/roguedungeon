@@ -33,21 +33,20 @@ def run():
     game_state = GAME_STATUS.PLAY
 
     gameworld = GameWorld()
-    dungeon = gameworld.generate_dungeon(current=True)
+    dungeon = gameworld.generate_dungeon()
 
     g_mon.generate(dungeon)
-    g_player.generate(dungeon)
+    g_player.generate(gameworld, dungeon)
 
-    player = dungeon.entities.player
+    player = gameworld.player
 
     gameworld.message('Welcome to the dungeon stranger!', color=colors.red)
 
-    dungeon.render.compute_FOV()
-    dungeon.render.all()
-
     mouse_coords = None
+    gameworld.render.all(mouse_coords)
+
     while not tdl.event.is_window_closed():
-        dungeon.render.all(mouse_coords)
+        gameworld.render.all(mouse_coords)
 
         user_input = get_user_input()
         if user_input and user_input.type == 'MOUSEMOTION':

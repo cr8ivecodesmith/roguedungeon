@@ -25,7 +25,7 @@ light_sepia = (158, 134, 100)
 lighter_sepia = (191, 171, 143)
 lightest_sepia = (222, 211, 195)
 
-#standard s
+# standard s
 red = (255, 0, 0)
 flame = (255, 63, 0)
 orange = (255, 127, 0)
@@ -140,7 +140,7 @@ light_magenta = (255, 114, 219)
 light_pink = (255, 114, 184)
 light_crimson = (255, 114, 149)
 
-#lighter s
+# lighter s
 lighter_red = (255, 165, 165)
 lighter_flame = (255, 188, 165)
 lighter_orange = (255, 210, 165)

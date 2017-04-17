@@ -1,7 +1,8 @@
 import logging
 import math
 
-from rogue.consoles import console
+from rogue import settings
+from rogue.consoles import tdl, console
 from rogue.handlers.status import ENTITY_STATUS
 
 
@@ -13,8 +14,11 @@ class GameObject:
     monster, item, stairs, wall, etc.
 
     """
-    def __init__(self,
-        x, y,
+    __dungeon = None
+    __visible_tiles = []
+
+    def __init__(
+        self, x, y,
         char, name, color,
         blocks=False, always_visible=False,
         fighter=None, ai=None, item=None, equipment=None,
@@ -70,6 +74,23 @@ class GameObject:
     def y(self, val):
         self.prev_y = self._y
         self._y = val
+
+    @property
+    def dungeon(self):
+        return self.__dungeon
+
+    @dungeon.setter
+    def dungeon(self, val):
+        self.__dungeon = val
+        self.compute_FOV()
+
+    @property
+    def visible_tiles(self):
+        return self.__visible_tiles
+
+    @visible_tiles.setter
+    def visible_tiles(self, val):
+        self.__visible_tiles = val
 
     def has_moved(self):
         return (self.prev_x, self.prev_y) != (self.x, self.y)
@@ -140,3 +161,16 @@ class GameObject:
 
         """
         console.draw_char(self.x, self.y, ' ', self.color, bg=None)
+
+    def compute_FOV(self):
+        """Computes the current FOV based on the current player position
+
+        """
+        if self.dungeon:
+            self.visible_tiles = tdl.map.quickFOV(
+                self.x, self.y,
+                self.dungeon.map_manager.is_visible_tile,
+                fov=settings.FOV_ALGO,
+                radius=settings.FOV_TORCH_RADIUS,
+                lightWalls=settings.FOV_LIGHT_WALLS
+            )

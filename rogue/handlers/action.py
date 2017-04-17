@@ -1,5 +1,4 @@
 import logging
-import sys
 
 from rogue.handlers.status import ENTITY_STATUS, GAME_STATUS
 from rogue.utils.controls import get_move_direction, get_move_amount
@@ -15,8 +14,8 @@ def monster_action(gameworld):
     player took an action.
 
     """
-    dungeon = gameworld.current_dungeon
-    player = dungeon.entities.player
+    player = gameworld.player
+    dungeon = player.dungeon
     if (
         gameworld.status == GAME_STATUS.PLAY and
         player.status != ENTITY_STATUS.NO_ACTION
@@ -32,8 +31,7 @@ def player_other_action(user_input, gameworld):
     This function updates the player status
 
     """
-    dungeon = gameworld.current_dungeon
-    player = dungeon.entities.player
+    player = gameworld.player
     player.status = ENTITY_STATUS.NO_ACTION
 
 
@@ -45,8 +43,8 @@ def player_move_or_attack(user_input, gameworld):
 
     """
     direction = get_move_direction(user_input)
-    dungeon = gameworld.current_dungeon
-    player = dungeon.entities.player
+    player = gameworld.player
+    dungeon = player.dungeon
     dx, dy = get_move_amount(direction)
     x, y = player.x + dx, player.y + dy
 
@@ -73,8 +71,8 @@ def player_action(user_input, gameworld):
     """Process the player actions
 
     """
-    dungeon = gameworld.current_dungeon
-    player = dungeon.entities.player
+    player = gameworld.player
+
     if not user_input:
         player.status = ENTITY_STATUS.NO_ACTION
         return
