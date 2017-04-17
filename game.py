@@ -3,9 +3,10 @@ import logging
 from rogue import settings
 from rogue.consoles import tdl, root_console, console
 from rogue.entities.generic import GameObject
-from rogue.generators import monsters as g_mon, player as g_player
+# from rogue.generators import monsters as g_mon, player as g_player
 from rogue.handlers.action import player_action, monster_action
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
+from rogue.spawn import spawn_player, spawn_monsters
 from rogue.utils import colors
 from rogue.utils.controls import get_user_input
 from rogue.worlds.game import GameWorld
@@ -35,8 +36,8 @@ def run():
     gameworld = GameWorld()
     dungeon = gameworld.generate_dungeon()
 
-    g_mon.generate(dungeon)
-    g_player.generate(gameworld, dungeon)
+    spawn_monsters(dungeon)
+    spawn_player(gameworld, dungeon)
 
     player = gameworld.player
 

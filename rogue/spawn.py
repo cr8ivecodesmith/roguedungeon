@@ -5,6 +5,7 @@ from rogue import settings
 from rogue.entities.components.fighters import FighterComponent
 from rogue.entities.components.monsters import BasicMonsterAIComponent
 from rogue.entities.generic import GameObject
+from rogue.entities.player import Player
 from rogue.handlers.death import monster_death
 from rogue.utils import colors
 
@@ -12,8 +13,19 @@ from rogue.utils import colors
 log = logging.getLogger('default')
 
 
-def generate(dungeon):
-    """Put a monster in a room
+def spawn_player(gameworld, dungeon):
+    """Initializes the player on the first room
+
+    """
+    player = Player(world=gameworld)
+    gameworld.player = player
+    player.dungeon = dungeon
+    player.x, player.y = dungeon.rooms[0].center()
+    log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))
+
+
+def spawn_monsters(dungeon):
+    """Spawn dungeon monsters
 
     """
     for idx, room in enumerate(dungeon.rooms):
