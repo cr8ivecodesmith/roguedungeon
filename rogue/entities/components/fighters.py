@@ -1,5 +1,7 @@
 import logging
 
+from rogue.utils import colors
+
 
 log = logging.getLogger('default')
 
@@ -25,14 +27,14 @@ class FighterComponent:
             msg = '{} attempts to attack {} but it has no effect!'.format(
                 entity.name.title(), target.name.title()
             )
-            self.owner.dungeon.world.message(msg)
+            self.owner.dungeon.world.message(msg, colors.gray)
 
     def take_damage(self, damage):
         entity = self.owner
         if damage > 0:
             self.hp -= damage
             msg = '{} took {} damage!'.format(entity.name.title(), damage)
-            self.owner.dungeon.world.message(msg)
+            self.owner.dungeon.world.message(msg, colors.light_red)
         if self.hp <= 0 and self.death_handler:
             self.death_handler(self.owner)
 
