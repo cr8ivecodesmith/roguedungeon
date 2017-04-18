@@ -1,5 +1,6 @@
 import logging
 
+from rogue import settings
 from rogue.consoles import tdl
 
 
@@ -11,9 +12,29 @@ def get_user_input():
     Returns none when there's no activity during realtime movement
 
     """
-    for event in tdl.event.get():
-        if event.type == 'KEYDOWN' or event.type == 'MOUSEMOTION':
-            return event
+    if settings.REALTIME:
+        for event in tdl.event.get():
+            if event.type == 'KEYDOWN' or event.type == 'MOUSEMOTION':
+                return event
+    else:
+        event = tdl.event.key_wait()
+        return event
+
+
+def get_char_or_cancel(cancel_key=None):
+    """This will practically pause the game until a `CHAR` type key is pressed
+    or the user presses the cancel key.
+
+    """
+    cancel_key = cancel_key or 'ESCAPE'
+    while True:
+        user_input = get_user_input()
+        valid = (
+            user_input and
+            (user_input.key == 'CHAR' or user_input.key == cancel_key)
+        )
+        if valid:
+            return user_input
 
 
 def get_move_direction(user_input):

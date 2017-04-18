@@ -6,6 +6,9 @@ _entity_status = namedtuple('_entity_status', ' '.join([
     'MOVE',
     'FIGHT',
     'DEAD',
+    'PICK',
+    'USE',
+    'EQUIP',
 ]))
 
 
@@ -20,7 +23,10 @@ ENTITY_STATUS = _entity_status(
     SKIP_TURN=1,
     MOVE=2,
     FIGHT=3,
-    DEAD=4
+    DEAD=4,
+    PICK=5,
+    USE=6,
+    EQUIP=7
 )
 
 

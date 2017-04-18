@@ -32,7 +32,21 @@ def player_other_action(user_input, gameworld):
 
     """
     player = gameworld.player
+    dungeon = player.dungeon
+
     player.status = ENTITY_STATUS.NO_ACTION
+
+    if (user_input.key == 'CHAR' and user_input.char == 'g'):
+        for loot in dungeon.entities.loot:
+            if loot.coords() == player.coords():
+                loot.item.pick_up()
+                player.status = ENTITY_STATUS.PICK
+                break
+    elif (user_input.key == 'CHAR' and user_input.char == 'i'):
+        chosen_item = gameworld.render.inventory_menu()
+        if chosen_item:
+            chosen_item.use()
+            player.status = ENTITY_STATUS.USE
 
 
 def player_move_or_attack(user_input, gameworld):
@@ -49,8 +63,8 @@ def player_move_or_attack(user_input, gameworld):
     x, y = player.x + dx, player.y + dy
 
     target = None
-    for ent in dungeon.entities.all(iterator=True):
-        if ent.fighter and ent.x == x and ent.y == y:
+    for ent in dungeon.entities.monsters:
+        if ent.fighter and ent.coords() == (x, y):
             target = ent
             break
 
@@ -60,9 +74,7 @@ def player_move_or_attack(user_input, gameworld):
     else:
         player.move(dx, dy)
         log.debug('Player has moved [{}] from {} to {}'.format(
-            player.has_moved(),
-            (player.prev_x, player.prev_y),
-            (player.x, player.y)
+            player.has_moved(), player.prev_coords(), player.coords()
         ))
         player.status = ENTITY_STATUS.MOVE
 

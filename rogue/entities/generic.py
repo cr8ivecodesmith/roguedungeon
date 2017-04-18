@@ -16,6 +16,10 @@ class GameObject:
     """
     __dungeon = None
     __visible_tiles = []
+    fighter = None
+    ai = None
+    item = None
+    equipment = None
 
     def __init__(
         self, x, y,
@@ -98,8 +102,14 @@ class GameObject:
     def visible_tiles(self, val):
         self.__visible_tiles = val
 
+    def coords(self):
+        return self.x, self.y
+
+    def prev_coords(self):
+        return self.prev_x, self.prev_y
+
     def has_moved(self):
-        return (self.prev_x, self.prev_y) != (self.x, self.y)
+        return self.prev_coords() != self.coords()
 
     def move(self, dx, dy):
         """Move by the given amount

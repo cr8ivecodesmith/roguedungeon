@@ -6,7 +6,7 @@ from rogue.entities.generic import GameObject
 # from rogue.generators import monsters as g_mon, player as g_player
 from rogue.handlers.action import player_action, monster_action
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
-from rogue.spawn import spawn_player, spawn_monsters
+from rogue.spawn import spawn_player, spawn_monsters, spawn_loot
 from rogue.utils import colors
 from rogue.utils.controls import get_user_input
 from rogue.worlds.game import GameWorld
@@ -37,6 +37,7 @@ def run():
     dungeon = gameworld.generate_dungeon()
 
     spawn_monsters(dungeon)
+    spawn_loot(dungeon)
     spawn_player(gameworld, dungeon)
 
     player = gameworld.player
@@ -52,8 +53,6 @@ def run():
         user_input = get_user_input()
         if user_input and user_input.type == 'MOUSEMOTION':
             mouse_coords = user_input.cell
-
-        log.debug('User input: {}'.format(user_input))
 
         process_user_input(user_input, gameworld)
 

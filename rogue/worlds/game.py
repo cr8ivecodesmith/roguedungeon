@@ -8,6 +8,7 @@ from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
 from rogue.worlds.dungeon import Dungeon
 from rogue.utils import colors
 from rogue.utils.name_generator import random_name
+from rogue.utils.controls import get_char_or_cancel
 
 
 log = logging.getLogger('default')
@@ -51,8 +52,6 @@ class RenderManager:
         tdl.flush()
 
     def draw_dungeon_map(self):
-        log.debug('Drawing dungeon map')
-
         player = self.world.player
         dungeon = self.world.player.dungeon
 
@@ -90,7 +89,6 @@ class RenderManager:
                         )
 
     def draw_entities(self, clear=False):
-        log.debug('{} entities'.format('Clearing' if clear else 'Drawing'))
         dungeon = self.world.player.dungeon
         player = self.world.player
 
@@ -162,6 +160,81 @@ class RenderManager:
         names = [e.name for e in dungeon.entities.all(iterator=True)
                  if (e.x, e.y) == coords and (e.x, e.y) in visible]
         return (', '.join(names)).capitalize()
+
+    def menu(self, header, options, width):
+        max_menu_options = 26
+        if len(options) > max_menu_options:
+            err = 'Cannot have a menu with more than {} options!'.format(
+                max_menu_options
+            )
+            raise ValueError(err)
+
+        # Calc the wrapped header height and one line per option
+        header_wrapped = textwrap.wrap(header, width)
+        header_height = len(header_wrapped)
+        height = len(options) + header_height
+
+        # Create an off-screen window that reps the menu's window
+        window = tdl.Console(width, height)
+
+        # Print the header with wrapped text
+        window.draw_rect(
+            0, 0,
+            width, height,
+            None, fg=colors.white, bg=None
+        )
+        for i, line in enumerate(header_wrapped):
+            window.draw_str(0, 0 + i, header_wrapped[i])
+
+        # Print the menu options
+        y = header_height
+        letter_idx = ord('a')
+        for opt_text in options:
+            text = '({}) {}'.format(
+                chr(letter_idx), opt_text
+            )
+            window.draw_str(0, y, text, bg=None)
+            y += 1
+            letter_idx += 1
+
+        # Blit the window console to root_console
+        x = settings.GAME_SCREEN_WIDTH // 2 - width // 2
+        y = settings.GAME_SCREEN_HEIGHT // 2 - height // 2
+        root_console.blit(window, x, y, width, height, 0, 0)
+
+        # Present the console to the player and wait for keypress
+        tdl.flush()
+        log.debug('Waiting for user input...')
+        key = get_char_or_cancel()
+        log.debug(key)
+        key_char = key.char
+        if key_char == '':
+            key_char = ' '  # placeholder
+
+        # Return the option index the keypress correlates to
+        idx = ord(key_char) - ord('a')
+        if idx >= 0 and idx < len(options):
+            return idx
+
+        return None
+
+    def inventory_menu(self, header=None):
+        header = header or (
+            'Press the key next to an item to use it, '
+            'or [ESC] to cancel.\n'
+        )
+        inventory = self.world.player.inventory
+        if not inventory:
+            opts = ['Inventory is empty.']
+        else:
+            opts = [i.name for i in inventory]
+
+        idx = self.menu(header, opts, settings.INVENTORY_WIDTH)
+
+        if idx is None or not inventory:
+            return None
+
+        return inventory[idx].item
 
 
 class GameWorld:
