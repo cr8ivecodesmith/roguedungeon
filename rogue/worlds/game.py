@@ -155,10 +155,13 @@ class RenderManager:
         if not coords:
             return
         x, y = coords
-        dungeon = self.world.player.dungeon
-        visible = self.world.player.visible_tiles
+        player = self.world.player
+        dungeon = player.dungeon
+        visible = player.visible_tiles
         names = [e.name for e in dungeon.entities.all(iterator=True)
-                 if (e.x, e.y) == coords and (e.x, e.y) in visible]
+                 if e.coords() == coords and e.coords() in visible]
+        if player.coords() == coords:
+            names.append(player.name)
         return (', '.join(names)).capitalize()
 
     def menu(self, header, options, width):
@@ -253,9 +256,11 @@ class GameWorld:
         self.dungeons.append(dungeon)
         return dungeon
 
-    def message(self, msg, color=colors.white):
+    def message(self, msg, color=colors.white, force_render=False):
         msg_lines = textwrap.wrap(msg, settings.MSG_WIDTH)
         for line in msg_lines:
             if len(self.messages) >= settings.MSG_HEIGHT:
                 del self.messages[0]
             self.messages.append((line, color))
+        if force_render:
+            self.render.all()

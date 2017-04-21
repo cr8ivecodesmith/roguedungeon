@@ -14,7 +14,10 @@ def get_user_input():
     """
     if settings.REALTIME:
         for event in tdl.event.get():
-            if event.type == 'KEYDOWN' or event.type == 'MOUSEMOTION':
+            if (
+                event.type == 'KEYDOWN' or event.type == 'MOUSEMOTION' or
+                event.type == 'MOUSEDOWN'
+            ):
                 return event
     else:
         event = tdl.event.key_wait()
@@ -35,6 +38,29 @@ def get_char_or_cancel(cancel_key=None):
         )
         if valid:
             return user_input
+
+
+def get_clicked_coords(use_cancel=True):
+    """Return the coords of the clicked tile
+
+    """
+    coords = (None, None)
+    while True:
+        user_input = get_user_input()
+        if not user_input:
+            continue
+        if user_input.type == 'MOUSEMOTION':
+            coords = user_input.cell
+        if user_input.type == 'MOUSEDOWN' and user_input.button == 'LEFT':
+            return coords
+        elif (
+            use_cancel and
+            ((user_input.type == 'MOUSEDOWN' and
+              user_input.button == 'RIGHT') or
+             (user_input.type == 'KEYDOWN' and
+              user_input.key == 'ESCAPE'))
+        ):
+            return None, None
 
 
 def get_move_direction(user_input):

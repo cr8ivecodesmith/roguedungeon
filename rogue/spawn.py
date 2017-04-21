@@ -8,7 +8,12 @@ from rogue.entities.components.loot import ItemComponent
 from rogue.entities.generic import GameObject
 from rogue.entities.player import Player
 from rogue.handlers.death import monster_death
-from rogue.handlers.spells import cast_heal
+from rogue.handlers.spells import (
+    cast_heal,
+    cast_lightning,
+    cast_confuse,
+    cast_fireball,
+)
 from rogue.utils import colors
 
 
@@ -90,17 +95,36 @@ def spawn_loot(dungeon):
                 # Only place the item on non-blocked tile
                 continue
 
-            # chance = randint(0, 100)
+            chance = randint(0, 100)
             obj_opts = {
                 'x': x,
                 'y': y,
                 'dungeon': dungeon,
             }
 
-            obj_opts['char'] = '!'
-            obj_opts['name'] = 'Healing Potion'
-            obj_opts['color'] = colors.violet
-            obj_opts['item'] = ItemComponent(use_handler=cast_heal)
+            if chance < 70:
+                # 70% chance
+                obj_opts['char'] = '!'
+                obj_opts['name'] = 'Healing Potion'
+                obj_opts['color'] = colors.violet
+                obj_opts['item'] = ItemComponent(use_handler=cast_heal)
+            elif chance < 70+10:
+                # 15% chance
+                obj_opts['char'] = '#'
+                obj_opts['name'] = 'Scroll of Lightning Bolt'
+                obj_opts['color'] = colors.light_yellow
+                obj_opts['item'] = ItemComponent(use_handler=cast_lightning)
+            elif chance < 70+10+10:
+                # 10% chance
+                obj_opts['char'] = '#'
+                obj_opts['name'] = 'Scroll of Fireball'
+                obj_opts['color'] = colors.light_yellow
+                obj_opts['item'] = ItemComponent(use_handler=cast_fireball)
+            else:
+                obj_opts['char'] = '#'
+                obj_opts['name'] = 'Scroll of Confusion'
+                obj_opts['color'] = colors.light_yellow
+                obj_opts['item'] = ItemComponent(use_handler=cast_confuse)
 
             obj = GameObject(**obj_opts)
             dungeon.entities.loot.append(obj)
