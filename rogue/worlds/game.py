@@ -221,10 +221,12 @@ class RenderManager:
 
         return None
 
-    def inventory_menu(self, header=None):
+    def inventory_menu(self, drop=False, header=None):
         header = header or (
-            'Press the key next to an item to use it, '
-            'or [ESC] to cancel.\n'
+            'Press the key next to an item to {} it, '
+            'or [ESC] to cancel.\n'.format(
+                'drop' if drop else 'use'
+            )
         )
         inventory = self.world.player.inventory
         if not inventory:

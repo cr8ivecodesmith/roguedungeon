@@ -48,18 +48,22 @@ class ItemComponent:
             else:
                 world.message('Cancelled.', colors.red)
 
-    """
     def drop(self):
-        global player, objects, inventory
+        dungeon = self.owner.dungeon
+        loot = dungeon.entities.loot
+        world = dungeon.world
+        player = world.player
+        inventory = player.inventory
 
-        objects.append(self.owner)
+        loot.append(self.owner)
         inventory.remove(self.owner)
         self.owner.x = player.x
         self.owner.y = player.y
 
         # special case for equipped equipment
-        if self.owner.equipment:
-            self.owner.equipment.dequip()
+        # if self.owner.equipment:
+        #     self.owner.equipment.dequip()
 
-        message('You dropped the {}.'.format(self.owner.name), libtcod.yellow)
-    """
+        world.message(
+            'You dropped the {}.'.format(self.owner.name), colors.yellow
+        )

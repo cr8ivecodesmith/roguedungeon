@@ -47,6 +47,11 @@ def player_other_action(user_input, gameworld):
         if chosen_item:
             chosen_item.use()
             player.status = ENTITY_STATUS.USE
+    elif (user_input.key == 'CHAR' and user_input.char == 'd'):
+        chosen_item = gameworld.render.inventory_menu(drop=True)
+        if chosen_item:
+            chosen_item.drop()
+            player.status = ENTITY_STATUS.USE
 
 
 def player_move_or_attack(user_input, gameworld):
