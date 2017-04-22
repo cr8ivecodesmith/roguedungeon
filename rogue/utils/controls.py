@@ -33,7 +33,7 @@ def get_char_or_cancel(cancel_key=None):
     while True:
         user_input = get_user_input()
         valid = (
-            user_input and
+            user_input and user_input.type == 'KEYDOWN' and
             (user_input.key == 'CHAR' or user_input.key == cancel_key)
         )
         if valid:

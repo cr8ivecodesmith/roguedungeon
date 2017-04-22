@@ -266,3 +266,8 @@ class GameWorld:
             self.messages.append((line, color))
         if force_render:
             self.render.all()
+
+    def message_box(self, msg, width=50, force_render=False):
+        self.render.menu(msg, [], width)
+        if force_render:
+            self.render.all()
