@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from rogue import bootstrap
-import game
+from rogue.handlers.game import main_menu
 
 
 if __name__ == '__main__':
     bootstrap.init()
-    game.run()
+    main_menu()
