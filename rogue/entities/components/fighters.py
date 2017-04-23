@@ -10,11 +10,12 @@ class FighterComponent:
     """Combat related methods for entities
 
     """
-    def __init__(self, hp, defense, power, death_handler=None):
+    def __init__(self, hp, defense, power, xp, death_handler=None):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
+        self.xp = xp
         self.death_handler = death_handler
 
     def attack(self, target):
@@ -31,11 +32,15 @@ class FighterComponent:
 
     def take_damage(self, damage):
         entity = self.owner
+        player = entity.dungeon.world.player
         if damage > 0:
             self.hp -= damage
             msg = '{} took {} damage!'.format(entity.name.title(), damage)
             self.owner.dungeon.world.message(msg, colors.light_red)
         if self.hp <= 0 and self.death_handler:
+            if entity != player:
+                # Yield the player XP from killing the monster
+                player.fighter.xp += self.xp
             self.death_handler(self.owner)
 
     def heal(self, amount):

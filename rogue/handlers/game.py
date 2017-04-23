@@ -1,6 +1,6 @@
 import logging
-import shelve
 import os
+import shelve
 
 from rogue import settings
 from rogue.consoles import tdl, root_console, console

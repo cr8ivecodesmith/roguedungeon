@@ -1,23 +1,24 @@
 import logging
 
 from rogue.handlers.status import ENTITY_STATUS, GAME_STATUS
+from rogue.spawn import spawn_next_level
 from rogue.utils.controls import get_move_direction, get_move_amount
 
 
 log = logging.getLogger('default')
 
 
-def monster_action(gameworld):
+def monster_action(world):
     """Process the monster actions
 
     Process monster action only when the game is still on play and when the
     player took an action.
 
     """
-    player = gameworld.player
+    player = world.player
     dungeon = player.dungeon
     if (
-        gameworld.status == GAME_STATUS.PLAY and
+        world.status == GAME_STATUS.PLAY and
         player.status != ENTITY_STATUS.NO_ACTION
     ):
         for ent in dungeon.entities.monsters:
@@ -25,16 +26,18 @@ def monster_action(gameworld):
                 ent.ai.take_turn()
 
 
-def player_other_action(user_input, gameworld):
+def player_other_action(user_input, world):
     """Process other actions based on the the input
 
     This function updates the player status
 
     """
-    player = gameworld.player
+    player = world.player
     dungeon = player.dungeon
 
     player.status = ENTITY_STATUS.NO_ACTION
+
+    log.debug(user_input)
 
     if (user_input.key == 'CHAR' and user_input.char == 'g'):
         for loot in dungeon.entities.loot:
@@ -43,18 +46,31 @@ def player_other_action(user_input, gameworld):
                 player.status = ENTITY_STATUS.PICK
                 break
     elif (user_input.key == 'CHAR' and user_input.char == 'i'):
-        chosen_item = gameworld.render.inventory_menu()
+        chosen_item = world.render.inventory_menu()
         if chosen_item:
             chosen_item.use()
             player.status = ENTITY_STATUS.USE
     elif (user_input.key == 'CHAR' and user_input.char == 'd'):
-        chosen_item = gameworld.render.inventory_menu(drop=True)
+        chosen_item = world.render.inventory_menu(drop=True)
         if chosen_item:
             chosen_item.drop()
             player.status = ENTITY_STATUS.USE
+    elif (user_input.key == 'CHAR' and user_input.char == 'c'):
+        info = (
+            'Some long character info\n\n'
+            'goes here...'
+        )
+        world.message_box(info)
+    elif (user_input.key == 'TEXT' and user_input.text == '<'):
+        spawn_next_level(world)
+        player.move_downstairs()
+        world.render.all()
+    elif (user_input.key == 'TEXT' and user_input.text == '>'):
+        player.move_upstairs()
+        world.render.all()
 
 
-def player_move_or_attack(user_input, gameworld):
+def player_move_or_attack(user_input, world):
     """Either move in the specified direction or attack a target in the
     specfied direction.
 
@@ -62,7 +78,7 @@ def player_move_or_attack(user_input, gameworld):
 
     """
     direction = get_move_direction(user_input)
-    player = gameworld.player
+    player = world.player
     dungeon = player.dungeon
     dx, dy = get_move_amount(direction)
     x, y = player.x + dx, player.y + dy
@@ -84,11 +100,11 @@ def player_move_or_attack(user_input, gameworld):
         player.status = ENTITY_STATUS.MOVE
 
 
-def player_action(user_input, gameworld):
+def player_action(user_input, world):
     """Process the player actions
 
     """
-    player = gameworld.player
+    player = world.player
 
     if not user_input:
         player.status = ENTITY_STATUS.NO_ACTION
@@ -96,6 +112,6 @@ def player_action(user_input, gameworld):
 
     direction = get_move_direction(user_input)
     if direction:
-        player_move_or_attack(user_input, gameworld)
+        player_move_or_attack(user_input, world)
     else:
-        player_other_action(user_input, gameworld)
+        player_other_action(user_input, world)

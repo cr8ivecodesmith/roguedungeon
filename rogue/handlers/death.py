@@ -20,8 +20,11 @@ def player_death(player):
 def monster_death(monster):
     world = monster.dungeon.world
 
-    msg = '{} is dead!'.format(monster.name.title())
-    world.message(msg)
+    msg = '{} is dead! You gain {}xp.'.format(
+        monster.name.title(),
+        monster.fighter.xp
+    )
+    world.message(msg, colors.yellow)
 
     monster.status = ENTITY_STATUS.DEAD
     monster.char = '%'

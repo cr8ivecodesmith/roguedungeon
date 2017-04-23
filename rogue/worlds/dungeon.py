@@ -4,8 +4,10 @@ import logging
 from random import randint
 
 from rogue import settings
+from rogue.entities.generic import GameObject
 from rogue.worlds.tiles import Tile
 from rogue.worlds.rooms import Room
+from rogue.utils import colors
 
 
 log = logging.getLogger('default')
@@ -67,6 +69,7 @@ class RoomManager:
 
         # Attach the `rooms` attribute
         self.dungeon.rooms = self.init_dungeon_rooms()
+        self.dungeon.stairs = self.make_stairs()
 
     def init_dungeon_rooms(self):
         log.debug('Initializing dugeon rooms')
@@ -113,6 +116,32 @@ class RoomManager:
                 ))
 
         return rooms
+
+    def make_stairs(self):
+        depth = self.dungeon.depth
+        downstairs, upstairs = None, None
+        stairs = {}
+
+        dx, dy = self.dungeon.rooms[-1].center()
+
+        stairs['DOWN'] = GameObject(
+            dx, dy,
+            '<', 'Downstairs', colors.white,
+            always_visible=True,
+
+        )
+
+        if depth > 1:
+            ux, uy = self.dungeon.rooms[0].center()
+            stairs['UP'] = GameObject(
+                ux, uy,
+                '>', 'Upstairs', colors.white,
+                always_visible=True,
+
+            )
+
+        return stairs
+
 
     def carve_room(self, room):
         """Carves a room on the dungeon map based on the room dimensions

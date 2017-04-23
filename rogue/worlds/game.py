@@ -24,6 +24,8 @@ class RenderManager:
         if player.has_moved():
             player.compute_FOV()
 
+        player.check_level_up()
+
         self.draw_dungeon_map()
         self.draw_entities()
         self.flush_console()
@@ -90,6 +92,7 @@ class RenderManager:
 
     def draw_entities(self, clear=False):
         dungeon = self.world.player.dungeon
+        dungeon_map = dungeon.dungeon_map
         player = self.world.player
 
         # We split the monster list since we want to draw the dead ones first
@@ -99,14 +102,20 @@ class RenderManager:
                          if i.status != ENTITY_STATUS.DEAD)
         entities = it.chain(
             dead_monsters,
+            dungeon.stairs.values(),
             dungeon.entities.loot,
             live_monsters
         )
 
         for ent in entities:
+            mx, my = ent.coords()
+            show = (
+                (ent.always_visible and dungeon_map[mx][my].explored) or
+                ent.coords() in player.visible_tiles
+            )
             if clear:
                 ent.clear()
-            elif (ent.x, ent.y) in player.visible_tiles:
+            elif show:
                 ent.draw()
 
         if clear:
@@ -123,6 +132,21 @@ class RenderManager:
             settings.IFACE_BAR_WIDTH, 'HP',
             player.fighter.hp, player.fighter.max_hp,
             colors.light_red, colors.dark_red
+        )
+        panel.draw_str(
+            1, 2,
+            'Dungeon level {}'.format(player.dungeon.depth + 1),
+            bg=None, fg=colors.white
+        )
+        panel.draw_str(
+            1, 3,
+            'Player level {}'.format(player.level),
+            bg=None, fg=colors.white
+        )
+        panel.draw_str(
+            1, 4,
+            'XP {}/{}'.format(player.fighter.xp, player.next_level_xp),
+            bg=None, fg=colors.white
         )
 
         names_under_mouse = self.get_names_under_mouse(mouse_coords)
@@ -160,6 +184,8 @@ class RenderManager:
         visible = player.visible_tiles
         names = [e.name for e in dungeon.entities.all(iterator=True)
                  if e.coords() == coords and e.coords() in visible]
+        names.extend(e.name for e in dungeon.stairs.values()
+                     if e.coords() == coords and e.coords() in visible)
         if player.coords() == coords:
             names.append(player.name)
         return (', '.join(names)).capitalize()

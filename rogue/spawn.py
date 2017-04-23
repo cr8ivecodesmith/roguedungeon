@@ -2,6 +2,7 @@ import logging
 from random import randint
 
 from rogue import settings
+from rogue.consoles import root_console, console
 from rogue.entities.components.fighters import FighterComponent
 from rogue.entities.components.monsters import BasicMonsterAIComponent
 from rogue.entities.components.loot import ItemComponent
@@ -20,12 +21,12 @@ from rogue.utils import colors
 log = logging.getLogger('default')
 
 
-def spawn_player(gameworld, dungeon):
+def spawn_player(world, dungeon):
     """Initializes the player on the first room
 
     """
-    player = Player(world=gameworld)
-    gameworld.player = player
+    player = Player(world=world)
+    world.player = player
     player.dungeon = dungeon
     player.x, player.y = dungeon.rooms[0].center()
     log.debug('{} placed at {}'.format(player.name, (player.x, player.y)))
@@ -58,6 +59,7 @@ def spawn_monsters(dungeon):
                 fighter_opts['hp'] = 10
                 fighter_opts['defense'] = 0
                 fighter_opts['power'] = 3
+                fighter_opts['xp'] = 35
                 obj_opts['char'] = 'o'
                 obj_opts['name'] = 'Orc'
                 obj_opts['color'] = colors.desaturated_green
@@ -66,6 +68,7 @@ def spawn_monsters(dungeon):
                 fighter_opts['hp'] = 16
                 fighter_opts['defense'] = 1
                 fighter_opts['power'] = 4
+                fighter_opts['xp'] = 100
                 obj_opts['char'] = 'T'
                 obj_opts['name'] = 'Troll'
                 obj_opts['color'] = colors.darker_green
@@ -99,6 +102,7 @@ def spawn_loot(dungeon):
             obj_opts = {
                 'x': x,
                 'y': y,
+                'always_visible': True,
                 'dungeon': dungeon,
             }
 
@@ -128,3 +132,20 @@ def spawn_loot(dungeon):
 
             obj = GameObject(**obj_opts)
             dungeon.entities.loot.append(obj)
+
+
+def spawn_next_level(world):
+    """Make a new dungeon level
+
+    """
+    log.debug('Creating a new dungeon...')
+    player = world.player
+    world.message(
+        'You take a moment to rest, and recover your strength.',
+        colors.light_violet
+    )
+    player.fighter.heal(player.fighter.max_hp / 2)  # heals by 50% of max_hp
+
+    dungeon = world.generate_dungeon()
+    spawn_monsters(dungeon)
+    spawn_loot(dungeon)
