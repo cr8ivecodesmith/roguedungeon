@@ -40,6 +40,42 @@ Make sure the virtualenv is activated.
 (venv) > python play.py
 ```
 
+## Movement
+
+```
+h (left)
+j (down)
+k (up)
+l (right)
+y (up, left)
+u (up, right)
+b (down, left)
+n (down, right)
+
+i (show inventory)
+d (drop inventory)
+g (pick item)
+< (go downstairs)
+> (go upstairs)
+
+[esc] (save and exit game)
+```
+
+
+## Module overview
+
+#### Handle controls
+rogue\handlers\action.py
+rogue\utils\controls.py
+
+#### Handle entity generation
+rogue\spawn.py
+
+#### Handle entity behavior and attributes
+rogue\entities\generic.py
+rogue\entities\player.py
+rogue\entities\components\fighters.py
+rogue\entities\components\loot.py
 
 ## Troubleshooting installation
 
