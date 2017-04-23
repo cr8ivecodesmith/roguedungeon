@@ -65,17 +65,26 @@ g (pick item)
 ## Module overview
 
 #### Handle controls
+
+```
 rogue\handlers\action.py
 rogue\utils\controls.py
+```
 
 #### Handle entity generation
+
+```
 rogue\spawn.py
+```
 
 #### Handle entity behavior and attributes
+
+```
 rogue\entities\generic.py
 rogue\entities\player.py
 rogue\entities\components\fighters.py
 rogue\entities\components\loot.py
+```
 
 ## Troubleshooting installation
 
