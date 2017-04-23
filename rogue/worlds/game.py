@@ -255,10 +255,15 @@ class RenderManager:
             )
         )
         inventory = self.world.player.inventory
+        opts = []
         if not inventory:
-            opts = ['Inventory is empty.']
+            opts.append('Inventory is empty.')
         else:
-            opts = [i.name for i in inventory]
+            for i in inventory:
+                text = i.name
+                if i.equipment and i.equipment.is_equipped:
+                    text = '{} (on {})'.format(i.name, i.equipment.slot)
+                opts.append(text)
 
         idx = self.menu(header, opts, settings.INVENTORY_WIDTH)
 

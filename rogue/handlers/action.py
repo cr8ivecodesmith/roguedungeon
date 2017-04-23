@@ -64,10 +64,8 @@ def player_other_action(user_input, world):
     elif (user_input.key == 'TEXT' and user_input.text == '<'):
         spawn_next_level(world)
         player.move_downstairs()
-        world.render.all()
     elif (user_input.key == 'TEXT' and user_input.text == '>'):
         player.move_upstairs()
-        world.render.all()
 
 
 def player_move_or_attack(user_input, world):

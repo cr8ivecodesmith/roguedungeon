@@ -2,10 +2,9 @@ import logging
 from random import randint
 
 from rogue import settings
-from rogue.consoles import root_console, console
 from rogue.entities.components.fighters import FighterComponent
 from rogue.entities.components.monsters import BasicMonsterAIComponent
-from rogue.entities.components.loot import ItemComponent
+from rogue.entities.components.loot import ItemComponent, EquipmentComponent
 from rogue.entities.generic import GameObject
 from rogue.entities.player import Player
 from rogue.handlers.death import monster_death
@@ -34,6 +33,8 @@ def spawn_player(world, dungeon):
 
 def spawn_monsters(dungeon):
     """Spawn dungeon monsters
+
+    TODO: Apply some monster generation progression on deeper levels
 
     """
     for idx, room in enumerate(dungeon.rooms):
@@ -84,6 +85,8 @@ def spawn_monsters(dungeon):
 def spawn_loot(dungeon):
     """Spawn Items
 
+    TODO: Apply some item generation progression on deeper levels
+
     """
     for idx, room in enumerate(dungeon.rooms):
         num_items = randint(0, settings.ROOM_MAX_ITEMS)
@@ -106,24 +109,33 @@ def spawn_loot(dungeon):
                 'dungeon': dungeon,
             }
 
-            if chance < 70:
-                # 70% chance
+            if chance < 60:
+                # 60% chance
                 obj_opts['char'] = '!'
                 obj_opts['name'] = 'Healing Potion'
                 obj_opts['color'] = colors.violet
                 obj_opts['item'] = ItemComponent(use_handler=cast_heal)
-            elif chance < 70+10:
+            elif chance < 60+10:
                 # 15% chance
                 obj_opts['char'] = '#'
                 obj_opts['name'] = 'Scroll of Lightning Bolt'
                 obj_opts['color'] = colors.light_yellow
                 obj_opts['item'] = ItemComponent(use_handler=cast_lightning)
-            elif chance < 70+10+10:
+            elif chance < 60+10+10:
                 # 10% chance
                 obj_opts['char'] = '#'
                 obj_opts['name'] = 'Scroll of Fireball'
                 obj_opts['color'] = colors.light_yellow
                 obj_opts['item'] = ItemComponent(use_handler=cast_fireball)
+            elif chance < 60+10+10+10:
+                # 5% chance
+                obj_opts['char'] = '/'
+                obj_opts['name'] = 'Dagger'
+                obj_opts['color'] = colors.sky
+                obj_opts['equipment'] = EquipmentComponent(
+                    slot='right hand',
+                    power_bonus=2
+                )
             else:
                 obj_opts['char'] = '#'
                 obj_opts['name'] = 'Scroll of Confusion'

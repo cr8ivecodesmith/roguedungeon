@@ -1,6 +1,10 @@
 from rogue import settings
 from rogue.consoles import tdl, root_console, console
 from rogue.entities.components.fighters import FighterComponent
+from rogue.entities.components.loot import (
+    ItemComponent,
+    EquipmentComponent
+)
 from rogue.entities.generic import GameObject
 from rogue.handlers.death import player_death
 from rogue.utils import colors
@@ -21,13 +25,13 @@ class Player(GameObject):
         world=None, **kwargs
     ):
         name = name or 'Stranger'
+        self.level = level
         char, color = '@', colors.white
         blocks = True
         fighter_component = FighterComponent(
-            hp=30, defense=2, power=5, xp=0,
+            hp=30, defense=1, power=2, xp=0,
             death_handler=player_death
         )
-        self.level = level
 
         super(Player, self).__init__(
             x=x, y=y,
@@ -175,3 +179,13 @@ class Player(GameObject):
             self.fighter.power += 1
         elif choice == 2:
             self.fighter.defense += 1
+
+    def get_equipment_in_slot(self, slot):
+        """Return equipment on the slot or None if it's free
+
+        """
+        for obj in self.inventory:
+            eq = obj.equipment
+            if eq and eq.slot == slot and eq.is_equipped:
+                return eq
+        return

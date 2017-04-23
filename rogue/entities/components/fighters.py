@@ -9,6 +9,8 @@ log = logging.getLogger('default')
 class FighterComponent:
     """Combat related methods for entities
 
+    TODO: Apply equipment bonus of equipped items
+
     """
     def __init__(self, hp, defense, power, xp, death_handler=None):
         self.max_hp = hp

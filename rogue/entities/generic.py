@@ -3,6 +3,7 @@ import math
 
 from rogue import settings
 from rogue.consoles import tdl, console
+from rogue.entities.components.loot import ItemComponent
 from rogue.handlers.status import ENTITY_STATUS
 
 
@@ -54,6 +55,10 @@ class GameObject:
         self.equipment = equipment
         if equipment:
             self.equipment.owner = self
+
+            # Equipments are essentially items, so an item is required as well
+            self.item = ItemComponent()
+            self.item.owner = self
 
     def __str__(self):
         return '{}@{}'.format(

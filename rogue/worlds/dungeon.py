@@ -119,7 +119,6 @@ class RoomManager:
 
     def make_stairs(self):
         depth = self.dungeon.depth
-        downstairs, upstairs = None, None
         stairs = {}
 
         dx, dy = self.dungeon.rooms[-1].center()
@@ -141,7 +140,6 @@ class RoomManager:
             )
 
         return stairs
-
 
     def carve_room(self, room):
         """Carves a room on the dungeon map based on the room dimensions
