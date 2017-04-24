@@ -199,7 +199,7 @@ class RenderManager:
             raise ValueError(err)
 
         # Calc the wrapped header height and one line per option
-        header_wrapped = textwrap.wrap(header, width, replace_whitespace=False)
+        header_wrapped = textwrap.wrap(header, width)
         header_height = len(header_wrapped)
         height = len(options) + header_height
 
