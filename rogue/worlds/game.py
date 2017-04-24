@@ -190,7 +190,7 @@ class RenderManager:
             names.append(player.name)
         return (', '.join(names)).capitalize()
 
-    def menu(self, header, options, width):
+    def menu(self, header, options, width, fg_alpha=1.0, bg_alpha=0.75):
         max_menu_options = 26
         if len(options) > max_menu_options:
             err = 'Cannot have a menu with more than {} options!'.format(
@@ -199,7 +199,7 @@ class RenderManager:
             raise ValueError(err)
 
         # Calc the wrapped header height and one line per option
-        header_wrapped = textwrap.wrap(header, width)
+        header_wrapped = textwrap.wrap(header, width, replace_whitespace=False)
         header_height = len(header_wrapped)
         height = len(options) + header_height
 
@@ -229,10 +229,16 @@ class RenderManager:
         # Blit the window console to root_console
         x = settings.GAME_SCREEN_WIDTH // 2 - width // 2
         y = settings.GAME_SCREEN_HEIGHT // 2 - height // 2
-        root_console.blit(window, x, y, width, height, 0, 0)
+        root_console.blit(
+            window,
+            x=x, y=y,
+            width=width, height=height,
+            srcX=0, srcY=0,
+            fg_alpha=fg_alpha, bg_alpha=bg_alpha
+        )
+        tdl.flush()
 
         # Present the console to the player and wait for keypress
-        tdl.flush()
         log.debug('Waiting for user input...')
         key = get_char_or_cancel()
         log.debug(key)
@@ -295,10 +301,5 @@ class GameWorld:
             if len(self.messages) >= settings.MSG_HEIGHT:
                 del self.messages[0]
             self.messages.append((line, color))
-        if force_render:
-            self.render.all()
-
-    def message_box(self, msg, width=50, force_render=False):
-        self.render.menu(msg, [], width)
         if force_render:
             self.render.all()

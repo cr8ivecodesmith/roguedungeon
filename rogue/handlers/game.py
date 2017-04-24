@@ -3,7 +3,7 @@ import os
 import shelve
 
 from rogue import settings
-from rogue.consoles import tdl, root_console, console, print_str
+from rogue.consoles import tdl, root_console, console, print_str, message_box
 from rogue.handlers.action import player_action, monster_action
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
 from rogue.spawn import spawn_player, spawn_monsters, spawn_loot
@@ -138,6 +138,13 @@ def main_menu():
                 play_game(old_world)
             except Exception as err:
                 log.warn(err)
-                world.message_box('No saved game to load!')
+                msg = 'No saved game to load!'
+                message_box(
+                    settings.GAME_SCREEN_WIDTH / 2 - (len(msg) / 2),
+                    settings.GAME_SCREEN_HEIGHT / 2,
+                    msg,
+                    width=len(msg)
+                )
+                #world.message_box('No saved game to load!')
         elif choice == 2:
             break

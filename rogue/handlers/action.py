@@ -1,5 +1,7 @@
 import logging
 
+from rogue import settings
+from rogue.consoles import message_box
 from rogue.handlers.status import ENTITY_STATUS, GAME_STATUS
 from rogue.spawn import spawn_next_level
 from rogue.utils.controls import get_move_direction, get_move_amount
@@ -57,10 +59,30 @@ def player_other_action(user_input, world):
             player.status = ENTITY_STATUS.USE
     elif (user_input.key == 'CHAR' and user_input.char == 'c'):
         info = (
-            'Some long character info\n\n'
-            'goes here...'
+            '{}\'s Stats\n\n'
+            'Level: {}\n'
+            'XP: {}/{}\n\n'
+            'Max HP: {}\n'
+            'Power: {}\n'
+            'Defense: {}\n\n'
+            'Location: {} Dungeon\n'
+            'Depth: {}\n'
+        ).format(
+            player.name,
+            player.level,
+            player.fighter.xp, player.next_level_xp,
+            player.fighter.max_hp,
+            player.fighter.power,
+            player.fighter.defense,
+            player.dungeon.name,
+            player.dungeon.depth + 1
         )
-        world.message_box(info)
+        message_box(
+            settings.GAME_SCREEN_WIDTH / 2 - 25,
+            settings.GAME_SCREEN_HEIGHT / 2 - 6,
+            info,
+            width=50
+        )
     elif (user_input.key == 'TEXT' and user_input.text == '<'):
         spawn_next_level(world)
         player.move_downstairs()
