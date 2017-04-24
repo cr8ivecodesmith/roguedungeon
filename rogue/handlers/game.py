@@ -3,13 +3,18 @@ import os
 import shelve
 
 from rogue import settings
-from rogue.consoles import tdl, root_console, console
+from rogue.consoles import tdl, root_console, console, print_str
 from rogue.handlers.action import player_action, monster_action
 from rogue.handlers.status import GAME_STATUS, ENTITY_STATUS
 from rogue.spawn import spawn_player, spawn_monsters, spawn_loot
 from rogue.utils import colors
 from rogue.utils.controls import get_user_input
 from rogue.worlds.game import GameWorld
+
+from tcod import (
+    image_load,
+    image_blit_2x,
+)
 
 
 log = logging.getLogger('default')
@@ -88,12 +93,31 @@ def play_game(world):
 
 def main_menu():
     world = GameWorld()
+    bg_image = image_load(settings.MAIN_MENU_BG_IMG)
+
     while not tdl.event.is_window_closed():
         console.clear()
         root_console.clear()
 
+        image_blit_2x(bg_image, 0, 0, 0)
+
+        print_str(
+            settings.GAME_SCREEN_WIDTH / 2 - (len(settings.GAME_TITLE) / 2),
+            settings.GAME_SCREEN_HEIGHT / 2 - 4,
+            settings.GAME_TITLE.upper(),
+            bg=None, fg=colors.gold,
+            bg_alpha=0.75
+        )
+        print_str(
+            settings.GAME_SCREEN_WIDTH / 2 - (len(settings.GAME_AUTHOR) / 2),
+            settings.GAME_SCREEN_HEIGHT - 3,
+            settings.GAME_AUTHOR,
+            bg=None, fg=colors.gold,
+            bg_alpha=0.75
+        )
+
         choice = world.render.menu(
-            '{}'.format(settings.GAME_TITLE),
+            '',
             [
                 'Play a new game',
                 'Continue last game',
