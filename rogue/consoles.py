@@ -1,6 +1,7 @@
 import tdl
 
 from rogue import settings
+from rogue.utils import colors
 
 
 tdl.set_font(
@@ -27,3 +28,24 @@ panel = tdl.Console(
     settings.GAME_SCREEN_WIDTH,
     settings.IFACE_PANEL_HEIGHT
 )
+
+
+def print_str(x, y, msg, bg=None, fg=colors.white, fg_alpha=1.0, bg_alpha=0):
+    """Prints a string
+
+    This function will blit the string on the root console right away
+
+    """
+    _console = tdl.Console(len(msg), 1)
+    _console.draw_str(
+        0, 0, msg,
+        bg=bg, fg=fg
+    )
+    root_console.blit(
+        _console,
+        x=x, y=y,
+        width=len(msg), height=1,
+        srcX=0, srcY=0,
+        fg_alpha=fg_alpha, bg_alpha=bg_alpha
+    )
+    tdl.flush()
