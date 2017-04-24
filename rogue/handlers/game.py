@@ -143,8 +143,9 @@ def main_menu():
                     settings.GAME_SCREEN_WIDTH / 2 - (len(msg) / 2),
                     settings.GAME_SCREEN_HEIGHT / 2,
                     msg,
-                    width=len(msg)
+                    width=len(msg),
+                    fg=colors.red,
+                    bg_alpha=1.0
                 )
-                #world.message_box('No saved game to load!')
         elif choice == 2:
             break

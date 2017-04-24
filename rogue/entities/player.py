@@ -1,10 +1,6 @@
 from rogue import settings
 from rogue.consoles import tdl, root_console, console
 from rogue.entities.components.fighters import FighterComponent
-from rogue.entities.components.loot import (
-    ItemComponent,
-    EquipmentComponent
-)
 from rogue.entities.generic import GameObject
 from rogue.handlers.death import player_death
 from rogue.utils import colors

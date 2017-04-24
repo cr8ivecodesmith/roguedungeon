@@ -1,7 +1,3 @@
-import itertools as it
-from string import whitespace
-from textwrap import wrap
-
 import tdl
 
 from rogue import settings
