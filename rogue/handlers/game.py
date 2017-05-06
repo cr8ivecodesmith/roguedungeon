@@ -37,10 +37,7 @@ def new_game():
 
 def save_game(world):
     log.info('Saving game...')
-    save = shelve.open(os.path.join(
-        settings.DATADIR,
-        'savegame'
-    ), 'n')
+    save = shelve.open(settings.SAVE_FILE, 'n')
     save['world'] = world
     save.close()
     log.info('Saved!')
@@ -49,10 +46,7 @@ def save_game(world):
 
 def load_game():
     log.info('Loading game...')
-    load = shelve.open(os.path.join(
-        settings.DATADIR,
-        'savegame'
-    ), 'r')
+    load = shelve.open(settings.SAVE_FILE, 'r')
     world = load['world']
     load.close()
     log.info('Loaded!')

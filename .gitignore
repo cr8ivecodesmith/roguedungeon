@@ -70,3 +70,6 @@ media/
 # Tmp files
 tmp/
 venv/
+
+# Savegame
+*.save

@@ -17,6 +17,11 @@ GAME_FULLSCREEN = False
 GAME_FPS = 20
 REALTIME = True
 
+SAVE_FILE = os.path.join(
+    DATADIR,
+    '{}.save'.format(GAME_TITLE.replace(' ', '').lower())
+)
+
 MAIN_MENU_BG_IMG = os.path.join(BASEDIR, 'images', 'menu_background.png')
 GAME_FONT = os.path.join(BASEDIR, 'fonts', 'terminal10x10.png')
 GAME_FONT_GREYSCALE = True
