@@ -112,7 +112,7 @@ class Player(GameObject):
         valid = (
             len(self.world.dungeons) > 1 and
             downstairs and
-            downstairs.coords() in self.visible_tiles
+            downstairs.coords() == self.coords()
         )
         if valid:
             d_idx = self.world.dungeons.index(self.dungeon)
@@ -134,7 +134,7 @@ class Player(GameObject):
             self.dungeon.depth > 1 and
             len(self.world.dungeons) > 1 and
             upstairs and
-            upstairs.coords() in self.visible_tiles
+            upstairs.coords() == self.coords()
         )
         if valid:
             d_idx = self.world.dungeons.index(self.dungeon)
@@ -185,3 +185,10 @@ class Player(GameObject):
             if eq and eq.slot == slot and eq.is_equipped:
                 return eq
         return
+
+    def get_all_equipped(self):
+        """Return all equipped equipment
+
+        """
+        return [eq.equipment for eq in self.inventory
+                if eq.equipment and eq.equipment.is_equipped]

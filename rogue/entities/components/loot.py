@@ -22,8 +22,7 @@ class ItemComponent:
             world.message('You picked up the {}!'.format(self.owner.name),
                           colors.green)
 
-        # TODO: Implement equipment handling
-        # special case: if item is an equipment, equip it if the slot is unused
+        # Special case: if item is an equipment, equip it if the slot is unused
         equipment = self.owner.equipment
         if equipment and not player.get_equipment_in_slot(equipment.slot):
             equipment.equip()
@@ -90,7 +89,6 @@ class EquipmentComponent:
             self.equip()
 
     def equip(self):
-        # TODO: Remove previously equipped item on the same slot
         owner = self.owner
         world = owner.dungeon.world
         player = world.player

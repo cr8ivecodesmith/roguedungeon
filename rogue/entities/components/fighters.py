@@ -9,16 +9,38 @@ log = logging.getLogger('default')
 class FighterComponent:
     """Combat related methods for entities
 
-    TODO: Apply equipment bonus of equipped items
-
     """
     def __init__(self, hp, defense, power, xp, death_handler=None):
-        self.max_hp = hp
+        self.base_max_hp = hp
         self.hp = hp
-        self.defense = defense
-        self.power = power
+        self.base_defense = defense
+        self.base_power = power
         self.xp = xp
         self.death_handler = death_handler
+
+    @property
+    def power(self):
+        bonus = 0
+        if hasattr(self.owner, 'get_all_equipped'):
+            bonus = sum(e.power_bonus or 0
+                        for e in self.owner.get_all_equipped())
+        return self.base_power + bonus
+
+    @property
+    def defense(self):
+        bonus = 0
+        if hasattr(self.owner, 'get_all_equipped'):
+            bonus = sum(e.defense_bonus or 0
+                        for e in self.owner.get_all_equipped())
+        return self.base_defense + bonus
+
+    @property
+    def max_hp(self):
+        bonus = 0
+        if hasattr(self.owner, 'get_all_equipped'):
+            bonus = sum(e.max_hp_bonus or 0
+                        for e in self.owner.get_all_equipped())
+        return self.base_max_hp + bonus
 
     def attack(self, target):
         entity = self.owner
