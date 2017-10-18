@@ -169,12 +169,12 @@ class Player(GameObject):
                     'Agility (+1def from {})'.format(self.fighter.defense),
                 ], settings.LEVEL_SCREEN_WIDTH)
         if choice == 0:
-            self.fighter.max_hp += 20
+            self.fighter.base_max_hp += 20
             self.fighter.hp += 20
         elif choice == 1:
-            self.fighter.power += 1
+            self.fighter.base_power += 1
         elif choice == 2:
-            self.fighter.defense += 1
+            self.fighter.base_defense += 1
 
     def get_equipment_in_slot(self, slot):
         """Return equipment on the slot or None if it's free

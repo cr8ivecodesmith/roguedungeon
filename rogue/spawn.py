@@ -15,6 +15,7 @@ from rogue.handlers.spells import (
     cast_fireball,
 )
 from rogue.utils import colors
+from rogue.utils.random import from_dungeon_level, random_choice
 
 
 log = logging.getLogger('default')
@@ -37,6 +38,23 @@ def spawn_monsters(dungeon):
     TODO: Apply some monster generation progression on deeper levels
 
     """
+    # max monsters per room
+    max_monsters = from_dungeon_level([
+        (2, 1),
+        (3, 4),
+        (5, 6),
+    ], dungeon.depth)
+
+    # chance of each monster
+    monster_chances = {
+        'orc': 80,  # orcs always shows up.
+        'troll': from_dungeon_level([
+            (15, 3),
+            (30, 5),
+            (60, 7),
+        ], dungeon.depth),
+    }
+
     for idx, room in enumerate(dungeon.rooms):
         num_monsters = randint(0, settings.ROOM_MAX_MONSTERS)
         log.debug('Generating {} monsters in room {}'.format(
